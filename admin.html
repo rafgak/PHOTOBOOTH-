@@ -3,256 +3,349 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Photobooth Studio</title>
+    <title>Admin - FotoStudio</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f1f0ee;
+            padding: 24px;
         }
-        .container { max-width: 800px; margin: 0 auto; }
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        h1 { color: #333; margin-bottom: 10px; }
-        p { color: #666; margin-bottom: 30px; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #333;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            font-size: 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            outline: none;
-        }
-        .form-group input:focus { border-color: #667eea; }
-        button {
-            padding: 12px 25px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        button:hover { transform: translateY(-2px); }
-        .login-section { text-align: center; }
-        #adminPassword {
-            width: 100%;
-            max-width: 300px;
+
+        .container {
+            max-width: 700px;
             margin: 0 auto;
         }
-        hr { margin: 30px 0; }
+
+        /* Header */
+        .header {
+            background: #2c3e50;
+            border-radius: 24px;
+            padding: 32px 24px;
+            margin-bottom: 24px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 1.6rem;
+            margin-bottom: 4px;
+        }
+
+        .header p {
+            opacity: 0.7;
+            font-size: 0.85rem;
+        }
+
+        /* Kartu putih */
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        }
+
+        /* Login */
+        .login-box {
+            text-align: center;
+        }
+
+        .login-box input {
+            width: 100%;
+            max-width: 280px;
+            padding: 14px 18px;
+            border: 1.5px solid #e0ddd9;
+            border-radius: 48px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            margin-bottom: 16px;
+        }
+
+        .login-box input:focus {
+            outline: none;
+            border-color: #2c3e50;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 48px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: #2c3e50;
+        }
+
+        .btn-primary:hover {
+            background: #1a1a2e;
+        }
+
+        .btn-danger {
+            background: #c0a080;
+        }
+
+        .btn-danger:hover {
+            background: #a08464;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 6px;
+            letter-spacing: 0.3px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid #e0ddd9;
+            border-radius: 32px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            background: #fff;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #2c3e50;
+        }
+
+        /* File input styling */
+        .file-label {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #f0f0f0;
+            border-radius: 32px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            color: #555;
+        }
+
+        /* Alert */
+        .alert {
+            margin-top: 16px;
+            padding: 12px;
+            border-radius: 24px;
+            font-size: 0.8rem;
+        }
+
+        .alert-success {
+            background: #e6f0ea;
+            color: #2c5e3c;
+        }
+
+        .alert-error {
+            background: #fce8e6;
+            color: #b33;
+        }
+
+        /* Data list */
         .data-item {
-            background: #f8f9fa;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 14px;
+            border-bottom: 1px solid #f0f0f0;
         }
-        .delete-btn {
-            background: #dc3545;
-            padding: 8px 15px;
-            font-size: 14px;
+
+        .data-item:last-child {
+            border-bottom: none;
         }
-        #uploadStatus { margin-top: 15px; padding: 10px; border-radius: 8px; }
-        .success { background: #d4edda; color: #155724; }
-        .error { background: #f8d7da; color: #721c24; }
+
+        .data-name {
+            font-weight: 500;
+        }
+
+        .data-date {
+            font-size: 0.7rem;
+            color: #aaa;
+            margin-top: 4px;
+        }
+
+        hr {
+            margin: 24px 0;
+            border: none;
+            border-top: 1px solid #eee;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="card">
-            <h1>🔐 ADMIN PANEL</h1>
-            <p>Upload hasil foto pelanggan</p>
-            
-            <div id="loginSection" class="login-section">
-                <div class="form-group">
-                    <input type="password" id="adminPassword" placeholder="Masukkan password admin">
-                </div>
-                <button id="loginBtn">Login</button>
-                <div id="loginError" style="color:red; margin-top:10px;"></div>
-            </div>
-            
-            <div id="adminSection" style="display:none;">
-                <div class="form-group">
-                    <label>Nama Pelanggan:</label>
-                    <input type="text" id="nama" placeholder="Contoh: Ahmad Wijaya">
-                </div>
-                
-                <div class="form-group">
-                    <label>Upload Foto (bisa multiple):</label>
-                    <input type="file" id="fotoFiles" multiple accept="image/*">
-                </div>
-                
-                <div class="form-group">
-                    <label>Upload GIF (opsional):</label>
-                    <input type="file" id="gifFile" accept="image/gif">
-                </div>
-                
-                <button id="uploadBtn">📤 Upload ke Database</button>
-                <div id="uploadStatus"></div>
-                
-                <hr>
-                
-                <h3>Data Terbaru</h3>
-                <div id="dataList"></div>
-            </div>
+
+<div class="container">
+    <div class="header">
+        <h1>📸 Panel Admin</h1>
+        <p>Upload & manage hasil foto</p>
+    </div>
+
+    <div id="loginSection" class="card">
+        <div class="login-box">
+            <input type="password" id="adminPassword" placeholder="Password admin">
+            <button class="btn btn-primary" id="loginBtn">Login</button>
+            <div id="loginError" style="color:#b33; margin-top:12px; font-size:0.8rem;"></div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        // Konfigurasi Supabase (ganti dengan punya lu)
-        const SUPABASE_URL = "https://YOUR_PROJECT.supabase.co";
-        const SUPABASE_KEY = "YOUR_ANON_KEY";
-        const ADMIN_PASSWORD = "pace123"; // Ganti password lu
-
-        let supabase = null;
-
-        document.getElementById('loginBtn').addEventListener('click', () => {
-            const password = document.getElementById('adminPassword').value;
-            if (password === ADMIN_PASSWORD) {
-                document.getElementById('loginSection').style.display = 'none';
-                document.getElementById('adminSection').style.display = 'block';
-                initSupabase();
-                loadData();
-            } else {
-                document.getElementById('loginError').innerText = 'Password salah!';
-            }
-        });
-
-        function initSupabase() {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        }
-
-        document.getElementById('uploadBtn').addEventListener('click', async () => {
-            const nama = document.getElementById('nama').value.trim();
-            const fotoFiles = document.getElementById('fotoFiles').files;
-            const gifFile = document.getElementById('gifFile').files[0];
-            
-            if (!nama || fotoFiles.length === 0) {
-                alert('Isi nama dan minimal 1 foto!');
-                return;
-            }
-            
-            const uploadStatus = document.getElementById('uploadStatus');
-            uploadStatus.innerHTML = '⏳ Uploading...';
-            uploadStatus.className = '';
-            
-            try {
-                const fotoUrls = [];
-                for (let i = 0; i < fotoFiles.length; i++) {
-                    const file = fotoFiles[i];
-                    const fileName = `${Date.now()}_${i}_${file.name}`;
-                    const { error } = await supabase.storage
-                        .from('foto')
-                        .upload(fileName, file);
-                    
-                    if (error) throw error;
-                    
-                    const { data: urlData } = supabase.storage
-                        .from('foto')
-                        .getPublicUrl(fileName);
-                    
-                    fotoUrls.push(urlData.publicUrl);
-                }
-                
-                let gifUrl = null;
-                if (gifFile) {
-                    const gifName = `gif_${Date.now()}.gif`;
-                    const { error } = await supabase.storage
-                        .from('foto')
-                        .upload(gifName, gifFile);
-                    
-                    if (!error) {
-                        const { data: gifUrlData } = supabase.storage
-                            .from('foto')
-                            .getPublicUrl(gifName);
-                        gifUrl = gifUrlData.publicUrl;
-                    }
-                }
-                
-                const { error: dbError } = await supabase
-                    .from('hasil_foto')
-                    .insert([{
-                        nama: nama,
-                        foto_urls: fotoUrls,
-                        gif_url: gifUrl,
-                        created_at: new Date().toISOString()
-                    }]);
-                
-                if (dbError) throw dbError;
-                
-                uploadStatus.innerHTML = '✅ Upload berhasil!';
-                uploadStatus.className = 'success';
-                document.getElementById('nama').value = '';
-                document.getElementById('fotoFiles').value = '';
-                document.getElementById('gifFile').value = '';
-                loadData();
-                
-            } catch (err) {
-                uploadStatus.innerHTML = '❌ Gagal: ' + err.message;
-                uploadStatus.className = 'error';
-                console.error(err);
-            }
-        });
-
-        async function loadData() {
-            if (!supabase) return;
-            
-            const { data, error } = await supabase
-                .from('hasil_foto')
-                .select('*')
-                .order('created_at', { ascending: false });
-            
-            if (error) {
-                console.error(error);
-                return;
-            }
-            
-            const dataList = document.getElementById('dataList');
-            if (!data || data.length === 0) {
-                dataList.innerHTML = '<p>Belum ada data</p>';
-                return;
-            }
-            
-            dataList.innerHTML = data.map(item => `
-                <div class="data-item">
-                    <span><strong>${item.nama}</strong> - ${new Date(item.created_at).toLocaleDateString()}</span>
-                    <button class="delete-btn" onclick="deleteData('${item.id}')">Hapus</button>
+    <div id="adminSection" style="display:none;">
+        <div class="card">
+            <form id="uploadForm">
+                <div class="form-group">
+                    <label>Nama Pelanggan</label>
+                    <input type="text" id="nama" placeholder="Misal: Ahmad Wijaya" required>
                 </div>
-            `).join('');
+
+                <div class="form-group">
+                    <label>Upload Foto (bisa banyak)</label>
+                    <input type="file" id="fotoFiles" multiple accept="image/*" style="padding: 8px;">
+                </div>
+
+                <div class="form-group">
+                    <label>Upload GIF (opsional)</label>
+                    <input type="file" id="gifFile" accept="image/gif" style="padding: 8px;">
+                </div>
+
+                <button type="button" class="btn btn-primary" id="uploadBtn">📤 Upload</button>
+                <div id="uploadStatus"></div>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-bottom: 16px; font-weight:500;">📋 Data Terbaru</h3>
+            <div id="dataList" style="margin-top: 8px;">
+                <p style="color:#aaa; text-align:center; padding:20px;">Belum ada data</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    // 🔧 GANTI DENGAN PUNYA LU 🔧
+    const SUPABASE_URL = "https://YOUR_PROJECT.supabase.co";
+    const SUPABASE_KEY = "YOUR_ANON_KEY";
+    const ADMIN_PASSWORD = "pace123"; // Ganti password sesuai keinginan lu
+
+    let supabase = null;
+
+    function initSupabase() {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    }
+
+    document.getElementById('loginBtn').onclick = () => {
+        const pass = document.getElementById('adminPassword').value;
+        if (pass === ADMIN_PASSWORD) {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('adminSection').style.display = 'block';
+            initSupabase();
+            loadData();
+        } else {
+            document.getElementById('loginError').innerText = 'Password salah.';
+        }
+    };
+
+    document.getElementById('uploadBtn').onclick = async () => {
+        const nama = document.getElementById('nama').value.trim();
+        const fotoFiles = document.getElementById('fotoFiles').files;
+        const gifFile = document.getElementById('gifFile').files[0];
+        const statusDiv = document.getElementById('uploadStatus');
+
+        if (!nama || fotoFiles.length === 0) {
+            alert('Isi nama dan pilih minimal 1 foto');
+            return;
         }
 
-        window.deleteData = async (id) => {
-            if (!confirm('Hapus data ini?')) return;
-            
-            const { error } = await supabase
-                .from('hasil_foto')
-                .delete()
-                .eq('id', id);
-            
-            if (error) {
-                alert('Gagal hapus: ' + error.message);
-            } else {
-                loadData();
+        statusDiv.innerHTML = '⏳ Uploading...';
+        statusDiv.className = 'alert';
+
+        try {
+            const fotoUrls = [];
+            for (let i = 0; i < fotoFiles.length; i++) {
+                const file = fotoFiles[i];
+                const fileName = `${Date.now()}_${i}_${file.name}`;
+                const { error } = await supabase.storage.from('foto').upload(fileName, file);
+                if (error) throw error;
+                const { data: urlData } = supabase.storage.from('foto').getPublicUrl(fileName);
+                fotoUrls.push(urlData.publicUrl);
             }
-        };
-    </script>
+
+            let gifUrl = null;
+            if (gifFile) {
+                const gifName = `gif_${Date.now()}.gif`;
+                const { error } = await supabase.storage.from('foto').upload(gifName, gifFile);
+                if (!error) {
+                    const { data: gifUrlData } = supabase.storage.from('foto').getPublicUrl(gifName);
+                    gifUrl = gifUrlData.publicUrl;
+                }
+            }
+
+            const { error: dbError } = await supabase.from('hasil_foto').insert([{
+                nama: nama,
+                foto_urls: fotoUrls,
+                gif_url: gifUrl,
+                created_at: new Date().toISOString()
+            }]);
+
+            if (dbError) throw dbError;
+
+            statusDiv.innerHTML = '✅ Upload berhasil!';
+            statusDiv.className = 'alert alert-success';
+            document.getElementById('nama').value = '';
+            document.getElementById('fotoFiles').value = '';
+            document.getElementById('gifFile').value = '';
+            loadData();
+
+        } catch (err) {
+            statusDiv.innerHTML = '❌ Gagal: ' + err.message;
+            statusDiv.className = 'alert alert-error';
+            console.error(err);
+        }
+    };
+
+    async function loadData() {
+        if (!supabase) return;
+        const { data, error } = await supabase.from('hasil_foto').select('*').order('created_at', { ascending: false });
+        if (error) return console.error(error);
+
+        const container = document.getElementById('dataList');
+        if (!data || data.length === 0) {
+            container.innerHTML = '<p style="color:#aaa; text-align:center; padding:20px;">Belum ada data</p>';
+            return;
+        }
+
+        container.innerHTML = data.map(item => `
+            <div class="data-item">
+                <div>
+                    <div class="data-name">${item.nama}</div>
+                    <div class="data-date">${new Date(item.created_at).toLocaleDateString('id-ID')} • ${item.foto_urls?.length || 0} foto</div>
+                </div>
+                <button class="btn btn-danger" style="padding:6px 16px; background:#c0a080;" onclick="deleteData('${item.id}')">Hapus</button>
+            </div>
+        `).join('');
+    }
+
+    window.deleteData = async (id) => {
+        if (!confirm('Yakin hapus data ini?')) return;
+        const { error } = await supabase.from('hasil_foto').delete().eq('id', id);
+        if (error) alert('Gagal hapus: ' + error.message);
+        else loadData();
+    };
+</script>
 </body>
 </html>
