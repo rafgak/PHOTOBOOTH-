@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photobooth - Lihat Hasil Foto</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        h1 { color: #333; margin-bottom: 10px; }
+        p { color: #666; margin-bottom: 30px; }
+        .search-box { display: flex; gap: 10px; margin-bottom: 30px; }
+        #searchInput {
+            flex: 1;
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            outline: none;
+        }
+        #searchInput:focus { border-color: #667eea; }
+        #searchBtn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        #searchBtn:hover { transform: translateY(-2px); }
+        .result-container { margin-top: 20px; text-align: left; }
+        .foto-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .foto-card h3 { color: #333; margin-bottom: 15px; }
+        .foto-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .foto-grid img {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .gif-container { text-align: center; margin: 15px 0; }
+        .gif-container img { max-width: 100%; border-radius: 10px; }
+        .download-link {
+            display: inline-block;
+            margin: 5px;
+            padding: 8px 15px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .loading { text-align: center; padding: 20px; color: #666; }
+        .no-result { text-align: center; padding: 40px; color: #999; }
+        @media (max-width: 600px) {
+            .card { padding: 20px; }
+            .search-box { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>📸 PHOTOBOOTH STUDIO</h1>
+            <p>Masukkan nama pelanggan untuk melihat hasil foto</p>
+            
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Contoh: Ahmad Wijaya">
+                <button id="searchBtn">Cari</button>
+            </div>
+            
+            <div id="resultContainer" class="result-container"></div>
+            <div id="loading" class="loading" style="display:none;">⏳ Memuat...</div>
+        </div>
+    </div>
+
+    <script>
+        // Konfigurasi Supabase (ganti dengan punya lu)
+        const SUPABASE_URL = "https://YOUR_PROJECT.supabase.co";
+        const SUPABASE_KEY = "YOUR_ANON_KEY";
+
+        // Load Supabase
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+        script.onload = () => {
+            window.supabase = supabase;
+            init();
+        };
+        document.head.appendChild(script);
+
+        function init() {
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            
+            document.getElementById('searchBtn').addEventListener('click', () => search(supabase));
+            document.getElementById('searchInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') search(supabase);
+            });
+        }
+
+        async function search(supabase) {
+            const nama = document.getElementById('searchInput').value.trim();
+            if (!nama) {
+                alert('Masukkan nama pelanggan!');
+                return;
+            }
+            
+            const resultContainer = document.getElementById('resultContainer');
+            const loading = document.getElementById('loading');
+            
+            loading.style.display = 'block';
+            resultContainer.innerHTML = '';
+            
+            try {
+                const { data, error } = await supabase
+                    .from('hasil_foto')
+                    .select('*')
+                    .ilike('nama', `%${nama}%`)
+                    .order('created_at', { ascending: false });
+                
+                loading.style.display = 'none';
+                
+                if (error) throw error;
+                
+                if (!data || data.length === 0) {
+                    resultContainer.innerHTML = '<div class="no-result">❌ Tidak ada hasil foto untuk nama tersebut</div>';
+                    return;
+                }
+                
+                resultContainer.innerHTML = data.map(item => `
+                    <div class="foto-card">
+                        <h3>📸 ${item.nama} - ${new Date(item.created_at).toLocaleDateString()}</h3>
+                        <div class="foto-grid">
+                            ${item.foto_urls.map(url => `<img src="${url}" alt="foto">`).join('')}
+                        </div>
+                        ${item.gif_url ? `
+                            <div class="gif-container">
+                                <img src="${item.gif_url}" alt="GIF animasi">
+                            </div>
+                        ` : ''}
+                        <div>
+                            ${item.foto_urls.map(url => `<a href="${url}" download class="download-link">📥 Download Foto</a>`).join(' ')}
+                            ${item.gif_url ? `<a href="${item.gif_url}" download class="download-link">🎬 Download GIF</a>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+                
+            } catch (err) {
+                loading.style.display = 'none';
+                resultContainer.innerHTML = '<div class="no-result">⚠️ Gagal memuat data. Coba lagi nanti.</div>';
+                console.error(err);
+            }
+        }
+    </script>
+</body>
+</html>
