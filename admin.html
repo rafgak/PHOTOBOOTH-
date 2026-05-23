@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Photobooth Studio</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 { color: #333; margin-bottom: 10px; }
+        p { color: #666; margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            outline: none;
+        }
+        .form-group input:focus { border-color: #667eea; }
+        button {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        button:hover { transform: translateY(-2px); }
+        .login-section { text-align: center; }
+        #adminPassword {
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+        hr { margin: 30px 0; }
+        .data-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .delete-btn {
+            background: #dc3545;
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+        #uploadStatus { margin-top: 15px; padding: 10px; border-radius: 8px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>🔐 ADMIN PANEL</h1>
+            <p>Upload hasil foto pelanggan</p>
+            
+            <div id="loginSection" class="login-section">
+                <div class="form-group">
+                    <input type="password" id="adminPassword" placeholder="Masukkan password admin">
+                </div>
+                <button id="loginBtn">Login</button>
+                <div id="loginError" style="color:red; margin-top:10px;"></div>
+            </div>
+            
+            <div id="adminSection" style="display:none;">
+                <div class="form-group">
+                    <label>Nama Pelanggan:</label>
+                    <input type="text" id="nama" placeholder="Contoh: Ahmad Wijaya">
+                </div>
+                
+                <div class="form-group">
+                    <label>Upload Foto (bisa multiple):</label>
+                    <input type="file" id="fotoFiles" multiple accept="image/*">
+                </div>
+                
+                <div class="form-group">
+                    <label>Upload GIF (opsional):</label>
+                    <input type="file" id="gifFile" accept="image/gif">
+                </div>
+                
+                <button id="uploadBtn">📤 Upload ke Database</button>
+                <div id="uploadStatus"></div>
+                
+                <hr>
+                
+                <h3>Data Terbaru</h3>
+                <div id="dataList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Konfigurasi Supabase (ganti dengan punya lu)
+        const SUPABASE_URL = "https://YOUR_PROJECT.supabase.co";
+        const SUPABASE_KEY = "YOUR_ANON_KEY";
+        const ADMIN_PASSWORD = "pace123"; // Ganti password lu
+
+        let supabase = null;
+
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            const password = document.getElementById('adminPassword').value;
+            if (password === ADMIN_PASSWORD) {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('adminSection').style.display = 'block';
+                initSupabase();
+                loadData();
+            } else {
+                document.getElementById('loginError').innerText = 'Password salah!';
+            }
+        });
+
+        function initSupabase() {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        }
+
+        document.getElementById('uploadBtn').addEventListener('click', async () => {
+            const nama = document.getElementById('nama').value.trim();
+            const fotoFiles = document.getElementById('fotoFiles').files;
+            const gifFile = document.getElementById('gifFile').files[0];
+            
+            if (!nama || fotoFiles.length === 0) {
+                alert('Isi nama dan minimal 1 foto!');
+                return;
+            }
+            
+            const uploadStatus = document.getElementById('uploadStatus');
+            uploadStatus.innerHTML = '⏳ Uploading...';
+            uploadStatus.className = '';
+            
+            try {
+                const fotoUrls = [];
+                for (let i = 0; i < fotoFiles.length; i++) {
+                    const file = fotoFiles[i];
+                    const fileName = `${Date.now()}_${i}_${file.name}`;
+                    const { error } = await supabase.storage
+                        .from('foto')
+                        .upload(fileName, file);
+                    
+                    if (error) throw error;
+                    
+                    const { data: urlData } = supabase.storage
+                        .from('foto')
+                        .getPublicUrl(fileName);
+                    
+                    fotoUrls.push(urlData.publicUrl);
+                }
+                
+                let gifUrl = null;
+                if (gifFile) {
+                    const gifName = `gif_${Date.now()}.gif`;
+                    const { error } = await supabase.storage
+                        .from('foto')
+                        .upload(gifName, gifFile);
+                    
+                    if (!error) {
+                        const { data: gifUrlData } = supabase.storage
+                            .from('foto')
+                            .getPublicUrl(gifName);
+                        gifUrl = gifUrlData.publicUrl;
+                    }
+                }
+                
+                const { error: dbError } = await supabase
+                    .from('hasil_foto')
+                    .insert([{
+                        nama: nama,
+                        foto_urls: fotoUrls,
+                        gif_url: gifUrl,
+                        created_at: new Date().toISOString()
+                    }]);
+                
+                if (dbError) throw dbError;
+                
+                uploadStatus.innerHTML = '✅ Upload berhasil!';
+                uploadStatus.className = 'success';
+                document.getElementById('nama').value = '';
+                document.getElementById('fotoFiles').value = '';
+                document.getElementById('gifFile').value = '';
+                loadData();
+                
+            } catch (err) {
+                uploadStatus.innerHTML = '❌ Gagal: ' + err.message;
+                uploadStatus.className = 'error';
+                console.error(err);
+            }
+        });
+
+        async function loadData() {
+            if (!supabase) return;
+            
+            const { data, error } = await supabase
+                .from('hasil_foto')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            if (error) {
+                console.error(error);
+                return;
+            }
+            
+            const dataList = document.getElementById('dataList');
+            if (!data || data.length === 0) {
+                dataList.innerHTML = '<p>Belum ada data</p>';
+                return;
+            }
+            
+            dataList.innerHTML = data.map(item => `
+                <div class="data-item">
+                    <span><strong>${item.nama}</strong> - ${new Date(item.created_at).toLocaleDateString()}</span>
+                    <button class="delete-btn" onclick="deleteData('${item.id}')">Hapus</button>
+                </div>
+            `).join('');
+        }
+
+        window.deleteData = async (id) => {
+            if (!confirm('Hapus data ini?')) return;
+            
+            const { error } = await supabase
+                .from('hasil_foto')
+                .delete()
+                .eq('id', id);
+            
+            if (error) {
+                alert('Gagal hapus: ' + error.message);
+            } else {
+                loadData();
+            }
+        };
+    </script>
+</body>
+</html>
