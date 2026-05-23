@@ -186,25 +186,23 @@
 
     <div id="adminSection" style="display:none;">
         <div class="card">
-            <form id="uploadForm">
-                <div class="form-group">
-                    <label>Nama Pelanggan</label>
-                    <input type="text" id="nama" placeholder="Misal: Ahmad Wijaya" required>
-                </div>
+            <div class="form-group">
+                <label>Nama Pelanggan</label>
+                <input type="text" id="nama" placeholder="Misal: Ahmad Wijaya" required>
+            </div>
 
-                <div class="form-group">
-                    <label>Upload Foto (bisa banyak)</label>
-                    <input type="file" id="fotoFiles" multiple accept="image/*" style="padding: 8px;">
-                </div>
+            <div class="form-group">
+                <label>Upload Foto (bisa banyak)</label>
+                <input type="file" id="fotoFiles" multiple accept="image/*" style="padding: 8px;">
+            </div>
 
-                <div class="form-group">
-                    <label>Upload GIF (opsional)</label>
-                    <input type="file" id="gifFile" accept="image/gif" style="padding: 8px;">
-                </div>
+            <div class="form-group">
+                <label>Upload GIF (opsional)</label>
+                <input type="file" id="gifFile" accept="image/gif" style="padding: 8px;">
+            </div>
 
-                <button type="button" class="btn btn-primary" id="uploadBtn">📤 Upload</button>
-                <div id="uploadStatus"></div>
-            </form>
+            <button class="btn btn-primary" id="uploadBtn">📤 Upload</button>
+            <div id="uploadStatus"></div>
         </div>
 
         <div class="card">
@@ -218,17 +216,22 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // 🔧 GANTI DENGAN PUNYA LU 🔧
+    // KONFIGURASI - GANTI DENGAN PUNYA LU!
     const SUPABASE_URL = "https://fhuulpwvoyubgmnooqrf.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZodXVscHd2b3l1Ymdtbm9vcXJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NDIzMzQsImV4cCI6MjA5NTExODMzNH0.Dm8inSoHfc1ICBcT1TVLSJWiVZ6rqdifZUtWCLAFTNw";  // <-- GANTI DENGAN ANON PUBLIC KEY!
-    const ADMIN_PASSWORD = "Pace123";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZodW..." // GANTI DENGAN ANON PUBLIC KEY!
+    const ADMIN_PASSWORD = "pace123";
 
-    let supabase = null;
+    let supabaseClient = null;  // Ganti nama biar gak konflik
 
+    // Inisialisasi
     function initSupabase() {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        if (!supabaseClient) {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        }
+        return supabaseClient;
     }
 
+    // LOGIN
     document.getElementById('loginBtn').onclick = () => {
         const pass = document.getElementById('adminPassword').value;
         if (pass === ADMIN_PASSWORD) {
@@ -241,7 +244,9 @@
         }
     };
 
+    // UPLOAD
     document.getElementById('uploadBtn').onclick = async () => {
+        const supabase = initSupabase(); // Ambil client yang udah dibuat
         const nama = document.getElementById('nama').value.trim();
         const fotoFiles = document.getElementById('fotoFiles').files;
         const gifFile = document.getElementById('gifFile').files[0];
@@ -299,8 +304,11 @@
         }
     };
 
+    // LOAD DATA
     async function loadData() {
+        const supabase = initSupabase();
         if (!supabase) return;
+        
         const { data, error } = await supabase.from('hasil_foto').select('*').order('created_at', { ascending: false });
         if (error) return console.error(error);
 
@@ -321,7 +329,9 @@
         `).join('');
     }
 
+    // DELETE DATA
     window.deleteData = async (id) => {
+        const supabase = initSupabase();
         if (!confirm('Yakin hapus data ini?')) return;
         const { error } = await supabase.from('hasil_foto').delete().eq('id', id);
         if (error) alert('Gagal hapus: ' + error.message);
