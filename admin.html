@@ -120,9 +120,9 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // 🔧 GANTI DENGAN PUNYA LU 🔧
+    // 🔧 KONFIGURASI - GANTI KEY NYA DOANG 🔧
     const SUPABASE_URL = "https://fhuulpwvoyubgmnooqrf.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZodXVscHd2b3l1Ymdtbm9vcXJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NDIzMzQsImV4cCI6MjA5NTExODMzNH0.Dm8inSoHfc1ICBcT1TVLSJWiVZ6rqdifZUtWCLAFTNw";  // <-- GANTI DENGAN ANON PUBLIC KEY!
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZodXVscHd2b3l1Ymdtbm9vcXJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NDIzMzQsImV4cCI6MjA5NTExODMzNH0.Dm8inSoHfc1ICBcT1TVLSJWiVZ6rqdifZUtWCLAFTNw";
     const ADMIN_PASSWORD = "pace123";
 
     let _supabase = null;
@@ -156,6 +156,7 @@
 
         const nama = document.getElementById('nama').value.trim();
         const fotoFiles = document.getElementById('fotoFiles').files;
+        const gifFile = document.getElementById('gifFile').files[0];
         const statusDiv = document.getElementById('uploadStatus');
 
         if (!nama || fotoFiles.length === 0) {
@@ -168,32 +169,53 @@
 
         try {
             const fotoUrls = [];
+
+            // Upload foto
             for (let i = 0; i < fotoFiles.length; i++) {
                 const file = fotoFiles[i];
-                const fileName = `${Date.now()}_${i}_${file.name}`;
+                const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+                const fileName = `${Date.now()}_${i}_${cleanName}`;
+                
                 const { error } = await supabase.storage.from('foto').upload(fileName, file);
-                if (error) throw error;
+                if (error) throw new Error(`Foto ${i+1}: ${error.message}`);
+                
                 const { data } = supabase.storage.from('foto').getPublicUrl(fileName);
                 fotoUrls.push(data.publicUrl);
             }
 
+            // Upload GIF (opsional)
+            let gifUrl = null;
+            if (gifFile) {
+                const cleanGif = gifFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+                const gifName = `gif_${Date.now()}_${cleanGif}`;
+                const { error } = await supabase.storage.from('foto').upload(gifName, gifFile);
+                if (!error) {
+                    const { data } = supabase.storage.from('foto').getPublicUrl(gifName);
+                    gifUrl = data.publicUrl;
+                }
+            }
+
+            // Simpan ke database
             const { error: dbError } = await supabase.from('hasil_foto').insert([{
                 nama: nama,
                 foto_urls: fotoUrls,
+                gif_url: gifUrl,
                 created_at: new Date().toISOString()
             }]);
 
             if (dbError) throw dbError;
 
-            statusDiv.innerHTML = '✅ Upload berhasil!';
+            statusDiv.innerHTML = `✅ Berhasil! ${fotoUrls.length} foto terupload.`;
             statusDiv.className = 'alert alert-success';
             document.getElementById('nama').value = '';
             document.getElementById('fotoFiles').value = '';
+            document.getElementById('gifFile').value = '';
             loadData();
 
         } catch (err) {
             statusDiv.innerHTML = '❌ Gagal: ' + err.message;
             statusDiv.className = 'alert alert-error';
+            console.error(err);
         }
     };
 
@@ -216,6 +238,7 @@
                 <div>
                     <strong>${item.nama}</strong><br>
                     <small>${new Date(item.created_at).toLocaleDateString('id-ID')} • ${item.foto_urls?.length || 0} foto</small>
+                    ${item.gif_url ? '<br><small>🎬 + GIF</small>' : ''}
                 </div>
                 <button class="btn" style="background:#c0a080; padding:8px 16px;" onclick="deleteData('${item.id}')">Hapus</button>
             </div>
@@ -224,7 +247,7 @@
 
     // Delete
     window.deleteData = async (id) => {
-        if (!confirm('Yakin hapus?')) return;
+        if (!confirm('Yakin hapus data ini?')) return;
         const supabase = getSupabase();
         await supabase.from('hasil_foto').delete().eq('id', id);
         loadData();
