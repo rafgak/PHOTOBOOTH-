@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FotoStudio - Cek Hasil Jepretan Kamu</title>
+    <title>Hasil Fotoku - FotoStudio</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -32,6 +32,7 @@
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
+            margin-bottom: 30px;
         }
         .search-box input {
             flex: 1;
@@ -94,13 +95,23 @@
         .loading { text-align: center; padding: 48px; color: #999; }
         .empty-state { text-align: center; padding: 64px 24px; color: #bbb; }
         .empty-state span { font-size: 3rem; display: block; margin-bottom: 16px; }
+        .share-btn {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 48px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 20px;
+        }
         footer { text-align: center; padding: 24px; color: #aaa; font-size: 0.75rem; }
         @media (max-width: 600px) {
             body { padding: 16px; }
             .hero { padding: 32px 20px; }
             .hero h1 { font-size: 1.6rem; }
             .card { padding: 20px; }
-            .search-box button { padding: 0 24px; }
         }
     </style>
 </head>
@@ -108,46 +119,44 @@
 
 <div class="hero">
     <h1>📸 FotoStudio</h1>
-    <p>Cek & download hasil foto kamu di sini</p>
+    <p>Lihat hasil foto kamu di sini</p>
 </div>
 
 <div class="card">
     <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Masukkan nama kamu...">
+        <input type="text" id="searchInput" placeholder="Masukkan nama kamu..." value="" autofocus>
         <button id="searchBtn">Cari</button>
     </div>
     <div id="resultContainer"></div>
     <div id="loading" class="loading" style="display: none;">⏳ Sedang mencari...</div>
 </div>
 
-<footer>© 2025 FotoStudio • Hasil foto tersimpan selama 30 hari</footer>
+<footer>© 2025 FotoStudio • Scan QR untuk lihat hasil langsung</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
     (function() {
-        // 🔧 KONFIGURASI SUPABASE 🔧
+        // KONFIGURASI SUPABASE
         const SUPABASE_URL = "https://fhuulpwvoyubgmnooqrf.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZodXVscHd2b3l1Ymdtbm9vcXJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NDIzMzQsImV4cCI6MjA5NTExODMzNH0.Dm8inSoHfc1ICBcT1TVLSJWiVZ6rqdifZUtWCLAFTNw";
 
-        // Inisialisasi Supabase
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // DOM elements
         const searchBtn = document.getElementById('searchBtn');
         const searchInput = document.getElementById('searchInput');
         const resultContainer = document.getElementById('resultContainer');
         const loadingDiv = document.getElementById('loading');
 
-        // Event listeners
-        searchBtn.onclick = () => search();
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') search();
-        });
+        // Fungsi baca parameter URL
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
 
-        async function search() {
-            const nama = searchInput.value.trim();
-            if (!nama) {
-                alert('Masukkan nama dulu ya');
+        // Fungsi utama search
+        async function search(nama) {
+            if (!nama || nama.trim() === '') {
+                resultContainer.innerHTML = '<div class="empty-state"><span>📷</span><p>Masukkan nama untuk mencari hasil foto</p></div>';
                 return;
             }
 
@@ -169,7 +178,7 @@
                     resultContainer.innerHTML = `
                         <div class="empty-state">
                             <span>📷</span>
-                            <p>Wah, belum ada hasil foto untuk "${nama}"</p>
+                            <p>Wah, belum ada hasil foto untuk "${escapeHtml(nama)}"</p>
                             <p style="font-size:0.8rem">Coba cek nama lain atau coba lagi nanti</p>
                         </div>
                     `;
@@ -184,11 +193,11 @@
                             <div class="result-grid">
                                 ${item.foto_urls.map(url => `
                                     <div class="foto-item">
-                                        <img src="${url}" alt="foto">
+                                        <img src="${url}" alt="foto" loading="lazy">
                                         <div class="foto-info">
                                             <h4>📸 ${escapeHtml(item.nama)}</h4>
                                             <div class="date">${new Date(item.created_at).toLocaleDateString('id-ID')}</div>
-                                            <a href="${url}" download class="btn-download">⬇️ Download</a>
+                                            <a href="${url}" download class="btn-download">⬇️ Download Foto</a>
                                         </div>
                                     </div>
                                 `).join('')}
@@ -201,7 +210,7 @@
                         gifHtml = `
                             <div style="margin-top: 24px; background:#f9f9f9; border-radius:20px; padding:20px;">
                                 <h4 style="margin-bottom:12px">🎬 GIF Animasi</h4>
-                                <img src="${item.gif_url}" style="max-width:100%; border-radius:12px" alt="gif">
+                                <img src="${item.gif_url}" style="max-width:100%; border-radius:12px" alt="gif" loading="lazy">
                                 <div style="margin-top:12px">
                                     <a href="${item.gif_url}" download class="btn-download">⬇️ Download GIF</a>
                                 </div>
@@ -212,16 +221,22 @@
                     html += `
                         <div style="margin-bottom: 40px;">
                             <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; margin-bottom: 16px;">
-                                <h3 style="font-size:1.2rem; color:#2c3e50;">${escapeHtml(item.nama)}</h3>
+                                <h3 style="font-size:1.2rem; color:#2c3e50;">✨ Hasil Foto ${escapeHtml(item.nama)} ✨</h3>
                                 <span style="font-size:0.7rem; color:#aaa;">${new Date(item.created_at).toLocaleString('id-ID')}</span>
                             </div>
                             ${fotoHtml}
                             ${gifHtml}
+                            <div style="margin-top: 20px; text-align: center;">
+                                <button class="share-btn" onclick="shareToWA('${escapeHtml(item.nama)}')">📱 Bagikan ke WhatsApp</button>
+                            </div>
                         </div>
                         <hr style="margin: 32px 0; border: none; border-top: 1px solid #eee;">
                     `;
                 }
                 resultContainer.innerHTML = html;
+
+                // Scroll ke hasil
+                document.querySelector('.hero').scrollIntoView({ behavior: 'smooth' });
 
             } catch (err) {
                 loadingDiv.style.display = 'none';
@@ -230,7 +245,37 @@
             }
         }
 
-        // Fungsi keamanan untuk menghindari XSS
+        // Event listeners
+        searchBtn.onclick = () => {
+            const nama = searchInput.value.trim();
+            if (nama) {
+                // Update URL tanpa reload
+                const newUrl = `${window.location.pathname}?nama=${encodeURIComponent(nama)}`;
+                window.history.pushState({}, '', newUrl);
+                search(nama);
+            } else {
+                alert('Masukkan nama dulu ya');
+            }
+        };
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') searchBtn.click();
+        });
+
+        // Baca parameter URL saat halaman pertama kali loading
+        const namaDariUrl = getUrlParameter('nama');
+        if (namaDariUrl) {
+            searchInput.value = namaDariUrl;
+            search(namaDariUrl);
+        }
+
+        // Fungsi share ke WhatsApp
+        window.shareToWA = (nama) => {
+            const url = window.location.href.split('?')[0] + `?nama=${encodeURIComponent(nama)}`;
+            const waUrl = `https://wa.me/?text=📸 *Hasil Foto ${nama}* %0A%0ALihat hasil foto kamu di sini: ${url}%0A%0A~ FotoStudio`;
+            window.open(waUrl, '_blank');
+        };
+
         function escapeHtml(str) {
             if (!str) return '';
             return str.replace(/[&<>]/g, function(m) {
