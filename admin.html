@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - FotoStudio</title>
+    <title>Admin Dashboard - FotoStudio</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -11,247 +11,505 @@
             background: #f1f0ee;
             padding: 24px;
         }
-        .container { max-width: 700px; margin: 0 auto; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        /* Header */
         .header {
-            background: #2c3e50;
+            background: linear-gradient(135deg, #2c3e50 0%, #1a1a2e 100%);
             border-radius: 24px;
-            padding: 32px 24px;
+            padding: 24px 32px;
             margin-bottom: 24px;
-            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
         }
-        .header h1 { font-size: 1.6rem; }
-        .card {
+        .header h1 { font-size: 1.6rem; color: white; }
+        .header p { color: rgba(255,255,255,0.7); font-size: 0.85rem; margin-top: 4px; }
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .logout-btn:hover { background: rgba(255,255,255,0.3); }
+        
+        /* Stats card */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-card .number { font-size: 2rem; font-weight: bold; color: #2c3e50; }
+        .stat-card .label { font-size: 0.8rem; color: #999; margin-top: 5px; }
+        
+        /* Filter */
+        .filter-bar {
+            background: white;
+            border-radius: 20px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filter-bar input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1.5px solid #e0ddd9;
+            border-radius: 40px;
+            font-size: 0.9rem;
+        }
+        .filter-bar button {
+            padding: 10px 24px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+        }
+        .filter-bar .refresh-btn { background: #2196F3; }
+        .filter-bar .refresh-btn:hover { background: #1976D2; }
+        
+        /* Grid Foto */
+        .foto-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        .foto-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .foto-card:hover { transform: translateY(-4px); }
+        
+        .foto-preview {
+            position: relative;
+            background: #f0f0f0;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .foto-preview img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .foto-preview .gif-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #FF5722;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        .foto-info {
+            padding: 16px;
+        }
+        .foto-info h3 {
+            font-size: 1rem;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .foto-info .date {
+            font-size: 0.7rem;
+            color: #999;
+            margin-bottom: 8px;
+        }
+        .foto-info .count {
+            font-size: 0.75rem;
+            color: #666;
+            margin-bottom: 12px;
+        }
+        .foto-actions {
+            display: flex;
+            gap: 8px;
+            padding: 12px 16px;
+            border-top: 1px solid #eee;
+        }
+        .btn-view {
+            flex: 1;
+            padding: 8px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+        .btn-delete {
+            flex: 1;
+            padding: 8px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+        .btn-view:hover { background: #1976D2; }
+        .btn-delete:hover { background: #dc2626; }
+        
+        /* Modal Preview */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        .modal-content {
+            max-width: 800px;
+            margin: 40px auto;
             background: white;
             border-radius: 24px;
-            padding: 28px;
-            margin-bottom: 24px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            padding: 24px;
         }
-        .login-box { text-align: center; }
-        .login-box input {
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+        }
+        .modal-foto-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .modal-foto-grid img {
             width: 100%;
-            max-width: 280px;
-            padding: 14px 18px;
+            border-radius: 12px;
+        }
+        .modal-gif img { max-width: 100%; border-radius: 12px; }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+        
+        /* Login */
+        .login-card {
+            max-width: 400px;
+            margin: 100px auto;
+            background: white;
+            border-radius: 28px;
+            padding: 40px;
+            text-align: center;
+        }
+        .login-card input {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
             border: 1.5px solid #e0ddd9;
             border-radius: 48px;
-            font-size: 0.9rem;
-            margin-bottom: 16px;
+            font-size: 1rem;
         }
-        .btn {
-            padding: 12px 28px;
+        .login-card button {
+            padding: 12px 32px;
             background: #2c3e50;
             color: white;
             border: none;
             border-radius: 48px;
-            font-size: 0.9rem;
-            font-weight: 500;
             cursor: pointer;
+            font-size: 1rem;
         }
-        .btn-danger { background: #c0a080; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #555;
-            margin-bottom: 6px;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1.5px solid #e0ddd9;
-            border-radius: 32px;
-            font-size: 0.9rem;
-        }
-        .alert { margin-top: 16px; padding: 12px; border-radius: 24px; font-size: 0.8rem; }
-        .alert-success { background: #e6f0ea; color: #2c5e3c; }
-        .alert-error { background: #fce8e6; color: #b33; }
-        .data-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px;
-            border-bottom: 1px solid #f0f0f0;
+        
+        @media (max-width: 600px) {
+            body { padding: 16px; }
+            .foto-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <h1>📸 Panel Admin</h1>
-        <p>Upload & manage hasil foto</p>
+<div id="loginContainer">
+    <div class="login-card">
+        <h2>🔐 Admin Dashboard</h2>
+        <p style="color:#999; margin-bottom: 20px;">Masukkan password untuk mengakses</p>
+        <input type="password" id="adminPassword" placeholder="Password">
+        <button id="loginBtn">Login</button>
+        <div id="loginError" style="color:red; margin-top:12px;"></div>
     </div>
+</div>
 
-    <!-- FORM LOGIN -->
-    <div id="loginSection" class="card">
-        <div class="login-box">
-            <input type="password" id="adminPassword" placeholder="Password admin">
-            <button class="btn" id="loginBtn">Login</button>
-            <div id="loginError" style="color:#b33; margin-top:12px;"></div>
+<div id="dashboardContainer" style="display: none;">
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>📸 Dashboard FotoStudio</h1>
+                <p>Kelola semua hasil foto pelanggan</p>
+            </div>
+            <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
+        </div>
+        
+        <div class="stats" id="statsContainer">
+            <div class="stat-card"><div class="number" id="totalFotos">0</div><div class="label">Total Foto</div></div>
+            <div class="stat-card"><div class="number" id="totalPelanggan">0</div><div class="label">Total Pelanggan</div></div>
+            <div class="stat-card"><div class="number" id="totalUploads">0</div><div class="label">Total Upload</div></div>
+        </div>
+        
+        <div class="filter-bar">
+            <input type="text" id="searchNama" placeholder="Cari nama pelanggan...">
+            <button id="searchBtn">🔍 Cari</button>
+            <button id="refreshBtn" class="refresh-btn">🔄 Refresh</button>
+        </div>
+        
+        <div id="fotoGrid" class="foto-grid">
+            <div class="loading">⏳ Memuat data...</div>
         </div>
     </div>
+</div>
 
-    <!-- SECTION ADMIN -->
-    <div id="adminSection" style="display:none;">
-        <div class="card">
-            <div class="form-group">
-                <label>Nama Pelanggan</label>
-                <input type="text" id="nama" placeholder="Contoh: Ahmad Wijaya">
-            </div>
-            <div class="form-group">
-                <label>Upload Foto (bisa banyak)</label>
-                <input type="file" id="fotoFiles" multiple accept="image/*">
-            </div>
-            <div class="form-group">
-                <label>Upload GIF (opsional)</label>
-                <input type="file" id="gifFile" accept="image/gif">
-            </div>
-            <button class="btn" id="uploadBtn">📤 Upload</button>
-            <div id="uploadStatus"></div>
+<!-- Modal Preview -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">Detail Foto</h2>
+            <button class="close-modal" onclick="closeModal()">&times;</button>
         </div>
-
-        <div class="card">
-            <h3>📋 Data Terbaru</h3>
-            <div id="dataList" style="margin-top: 16px;">Belum ada data</div>
-        </div>
+        <div id="modalBody"></div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // 🔧 KONFIGURASI - GANTI KEY NYA DOANG 🔧
+    // Konfigurasi
     const SUPABASE_URL = "https://fhuulpwvoyubgmnooqrf.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZodXVscHd2b3l1Ymdtbm9vcXJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NDIzMzQsImV4cCI6MjA5NTExODMzNH0.Dm8inSoHfc1ICBcT1TVLSJWiVZ6rqdifZUtWCLAFTNw";
     const ADMIN_PASSWORD = "pace123";
-
-    let _supabase = null;
-
-    function getSupabase() {
-        if (!_supabase && typeof supabase !== 'undefined') {
-            _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        }
-        return _supabase;
-    }
-
+    
+    let supabase = null;
+    let allData = [];
+    
+    // Inisialisasi
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    
     // Login
     document.getElementById('loginBtn').onclick = () => {
         const pass = document.getElementById('adminPassword').value;
         if (pass === ADMIN_PASSWORD) {
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('adminSection').style.display = 'block';
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('dashboardContainer').style.display = 'block';
             loadData();
         } else {
-            document.getElementById('loginError').innerText = 'Password salah! Default: pace123';
+            document.getElementById('loginError').innerText = 'Password salah!';
         }
     };
-
-    // Upload
-    document.getElementById('uploadBtn').onclick = async () => {
-        const supabase = getSupabase();
-        if (!supabase) {
-            alert('Supabase belum siap. Cek koneksi internet dan refresh halaman.');
-            return;
-        }
-
-        const nama = document.getElementById('nama').value.trim();
-        const fotoFiles = document.getElementById('fotoFiles').files;
-        const gifFile = document.getElementById('gifFile').files[0];
-        const statusDiv = document.getElementById('uploadStatus');
-
-        if (!nama || fotoFiles.length === 0) {
-            alert('Isi nama dan pilih minimal 1 foto');
-            return;
-        }
-
-        statusDiv.innerHTML = '⏳ Uploading...';
-        statusDiv.className = 'alert';
-
-        try {
-            const fotoUrls = [];
-
-            // Upload foto
-            for (let i = 0; i < fotoFiles.length; i++) {
-                const file = fotoFiles[i];
-                const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-                const fileName = `${Date.now()}_${i}_${cleanName}`;
-                
-                const { error } = await supabase.storage.from('foto').upload(fileName, file);
-                if (error) throw new Error(`Foto ${i+1}: ${error.message}`);
-                
-                const { data } = supabase.storage.from('foto').getPublicUrl(fileName);
-                fotoUrls.push(data.publicUrl);
-            }
-
-            // Upload GIF (opsional)
-            let gifUrl = null;
-            if (gifFile) {
-                const cleanGif = gifFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-                const gifName = `gif_${Date.now()}_${cleanGif}`;
-                const { error } = await supabase.storage.from('foto').upload(gifName, gifFile);
-                if (!error) {
-                    const { data } = supabase.storage.from('foto').getPublicUrl(gifName);
-                    gifUrl = data.publicUrl;
-                }
-            }
-
-            // Simpan ke database
-            const { error: dbError } = await supabase.from('hasil_foto').insert([{
-                nama: nama,
-                foto_urls: fotoUrls,
-                gif_url: gifUrl,
-                created_at: new Date().toISOString()
-            }]);
-
-            if (dbError) throw dbError;
-
-            statusDiv.innerHTML = `✅ Berhasil! ${fotoUrls.length} foto terupload.`;
-            statusDiv.className = 'alert alert-success';
-            document.getElementById('nama').value = '';
-            document.getElementById('fotoFiles').value = '';
-            document.getElementById('gifFile').value = '';
-            loadData();
-
-        } catch (err) {
-            statusDiv.innerHTML = '❌ Gagal: ' + err.message;
-            statusDiv.className = 'alert alert-error';
-            console.error(err);
-        }
+    
+    // Logout
+    document.getElementById('logoutBtn').onclick = () => {
+        document.getElementById('loginContainer').style.display = 'flex';
+        document.getElementById('dashboardContainer').style.display = 'none';
+        document.getElementById('adminPassword').value = '';
     };
-
+    
     // Load data
     async function loadData() {
-        const supabase = getSupabase();
-        if (!supabase) return;
-
-        const { data, error } = await supabase.from('hasil_foto').select('*').order('created_at', { ascending: false });
-        if (error) return console.error(error);
-
-        const container = document.getElementById('dataList');
+        const grid = document.getElementById('fotoGrid');
+        grid.innerHTML = '<div class="loading">⏳ Memuat data...</div>';
+        
+        try {
+            const { data, error } = await supabase
+                .from('hasil_foto')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            if (error) throw error;
+            
+            allData = data || [];
+            updateStats();
+            renderGrid(allData);
+            
+        } catch (err) {
+            grid.innerHTML = `<div class="loading">❌ Error: ${err.message}</div>`;
+            console.error(err);
+        }
+    }
+    
+    // Update statistik
+    function updateStats() {
+        const totalFotos = allData.reduce((sum, item) => sum + (item.foto_urls?.length || 0), 0);
+        const totalPelanggan = allData.length;
+        document.getElementById('totalFotos').innerText = totalFotos;
+        document.getElementById('totalPelanggan').innerText = totalPelanggan;
+        document.getElementById('totalUploads').innerText = totalPelanggan;
+    }
+    
+    // Render grid
+    function renderGrid(data) {
+        const grid = document.getElementById('fotoGrid');
+        
         if (!data || data.length === 0) {
-            container.innerHTML = '<p style="color:#aaa;">Belum ada data</p>';
+            grid.innerHTML = '<div class="loading">📷 Belum ada data foto</div>';
             return;
         }
-
-        container.innerHTML = data.map(item => `
-            <div class="data-item">
-                <div>
-                    <strong>${item.nama}</strong><br>
-                    <small>${new Date(item.created_at).toLocaleDateString('id-ID')} • ${item.foto_urls?.length || 0} foto</small>
-                    ${item.gif_url ? '<br><small>🎬 + GIF</small>' : ''}
+        
+        grid.innerHTML = data.map(item => `
+            <div class="foto-card">
+                <div class="foto-preview">
+                    ${item.foto_urls && item.foto_urls[0] ? 
+                        `<img src="${item.foto_urls[0]}" alt="preview" loading="lazy">` : 
+                        '<div style="padding:80px; color:#999;">No photo</div>'}
+                    ${item.gif_url ? '<div class="gif-badge">🎬 GIF</div>' : ''}
                 </div>
-                <button class="btn" style="background:#c0a080; padding:8px 16px;" onclick="deleteData('${item.id}')">Hapus</button>
+                <div class="foto-info">
+                    <h3>${escapeHtml(item.nama)}</h3>
+                    <div class="date">📅 ${new Date(item.created_at).toLocaleString('id-ID')}</div>
+                    <div class="count">📸 ${item.foto_urls?.length || 0} foto ${item.gif_url ? ' + GIF' : ''}</div>
+                </div>
+                <div class="foto-actions">
+                    <button class="btn-view" onclick="viewDetail('${item.id}')">🔍 Lihat Detail</button>
+                    <button class="btn-delete" onclick="deleteData('${item.id}', '${escapeHtml(item.nama)}')">🗑️ Hapus</button>
+                </div>
             </div>
         `).join('');
     }
-
-    // Delete
-    window.deleteData = async (id) => {
-        if (!confirm('Yakin hapus data ini?')) return;
-        const supabase = getSupabase();
-        await supabase.from('hasil_foto').delete().eq('id', id);
+    
+    // View detail
+    window.viewDetail = async (id) => {
+        const item = allData.find(d => d.id == id);
+        if (!item) return;
+        
+        const modal = document.getElementById('modal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+        
+        modalTitle.innerText = `📸 ${item.nama}`;
+        
+        let fotoHtml = '';
+        if (item.foto_urls && item.foto_urls.length) {
+            fotoHtml = `
+                <h3 style="margin-bottom: 12px;">Foto-foto:</h3>
+                <div class="modal-foto-grid">
+                    ${item.foto_urls.map(url => `<img src="${url}" alt="foto" loading="lazy">`).join('')}
+                </div>
+            `;
+        }
+        
+        let gifHtml = '';
+        if (item.gif_url) {
+            gifHtml = `
+                <h3 style="margin: 20px 0 12px;">🎬 GIF Animasi:</h3>
+                <div class="modal-gif">
+                    <img src="${item.gif_url}" alt="gif">
+                </div>
+            `;
+        }
+        
+        modalBody.innerHTML = `
+            <div style="margin-bottom: 16px;">
+                <p><strong>Nama:</strong> ${escapeHtml(item.nama)}</p>
+                <p><strong>Tanggal:</strong> ${new Date(item.created_at).toLocaleString('id-ID')}</p>
+                <p><strong>Jumlah foto:</strong> ${item.foto_urls?.length || 0} foto</p>
+                ${item.gif_url ? '<p><strong>GIF:</strong> Ada</p>' : ''}
+            </div>
+            ${fotoHtml}
+            ${gifHtml}
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button onclick="closeModal()" style="padding: 10px 20px; background: #2c3e50; color:white; border:none; border-radius:12px;">Tutup</button>
+                <button onclick="copyLinks('${id}')" style="padding: 10px 20px; background: #2196F3; color:white; border:none; border-radius:12px;">📋 Copy Link Foto</button>
+            </div>
+        `;
+        
+        modal.style.display = 'block';
+    };
+    
+    window.copyLinks = (id) => {
+        const item = allData.find(d => d.id == id);
+        if (item && item.foto_urls && item.foto_urls[0]) {
+            navigator.clipboard.writeText(item.foto_urls[0]);
+            alert('Link foto pertama sudah di-copy!');
+        }
+    };
+    
+    window.closeModal = () => {
+        document.getElementById('modal').style.display = 'none';
+    };
+    
+    // Delete data
+    window.deleteData = async (id, nama) => {
+        if (!confirm(`Hapus semua foto milik "${nama}"?`)) return;
+        
+        try {
+            // Hapus dari database
+            const { error } = await supabase.from('hasil_foto').delete().eq('id', id);
+            if (error) throw error;
+            
+            alert(`✅ Data ${nama} berhasil dihapus!`);
+            loadData();
+            
+        } catch (err) {
+            alert(`❌ Gagal hapus: ${err.message}`);
+        }
+    };
+    
+    // Search
+    document.getElementById('searchBtn').onclick = () => {
+        const keyword = document.getElementById('searchNama').value.toLowerCase();
+        if (!keyword) {
+            renderGrid(allData);
+            return;
+        }
+        const filtered = allData.filter(item => item.nama.toLowerCase().includes(keyword));
+        renderGrid(filtered);
+    };
+    
+    // Refresh
+    document.getElementById('refreshBtn').onclick = () => {
+        document.getElementById('searchNama').value = '';
         loadData();
     };
+    
+    // Enter key search
+    document.getElementById('searchNama').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') document.getElementById('searchBtn').click();
+    });
+    
+    // Escape close modal
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeModal();
+    });
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
 </script>
 </body>
 </html>
