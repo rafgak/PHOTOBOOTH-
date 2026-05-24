@@ -296,7 +296,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 id="modalTitle">Detail Foto</h2>
-            <button class="close-modal" onclick="closeModal()">&times;</button>
+            <button class="close-modal" onclick="window.closeModal()">&times;</button>
         </div>
         <div id="modalBody"></div>
     </div>
@@ -304,212 +304,213 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // Konfigurasi
-    const SUPABASE_URL = "https://fhuulpwvoyubgmnooqrf.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZodXVscHd2b3l1Ymdtbm9vcXJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NDIzMzQsImV4cCI6MjA5NTExODMzNH0.Dm8inSoHfc1ICBcT1TVLSJWiVZ6rqdifZUtWCLAFTNw";
-    const ADMIN_PASSWORD = "pace123";
-    
-    let supabase = null;
-    let allData = [];
-    
-    // Inisialisasi
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    
-    // Login
-    document.getElementById('loginBtn').onclick = () => {
-        const pass = document.getElementById('adminPassword').value;
-        if (pass === ADMIN_PASSWORD) {
-            document.getElementById('loginContainer').style.display = 'none';
-            document.getElementById('dashboardContainer').style.display = 'block';
-            loadData();
-        } else {
-            document.getElementById('loginError').innerText = 'Password salah!';
-        }
-    };
-    
-    // Logout
-    document.getElementById('logoutBtn').onclick = () => {
-        document.getElementById('loginContainer').style.display = 'flex';
-        document.getElementById('dashboardContainer').style.display = 'none';
-        document.getElementById('adminPassword').value = '';
-    };
-    
-    // Load data
-    async function loadData() {
-        const grid = document.getElementById('fotoGrid');
-        grid.innerHTML = '<div class="loading">⏳ Memuat data...</div>';
+    (function() {
+        // Konfigurasi
+        const SUPABASE_URL = "https://fhuulpwvoyubgmnooqrf.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZodXVscHd2b3l1Ymdtbm9vcXJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NDIzMzQsImV4cCI6MjA5NTExODMzNH0.Dm8inSoHfc1ICBcT1TVLSJWiVZ6rqdifZUtWCLAFTNw";
+        const ADMIN_PASSWORD = "pace123";
         
-        try {
-            const { data, error } = await supabase
-                .from('hasil_foto')
-                .select('*')
-                .order('created_at', { ascending: false });
-            
-            if (error) throw error;
-            
-            allData = data || [];
-            updateStats();
-            renderGrid(allData);
-            
-        } catch (err) {
-            grid.innerHTML = `<div class="loading">❌ Error: ${err.message}</div>`;
-            console.error(err);
-        }
-    }
-    
-    // Update statistik
-    function updateStats() {
-        const totalFotos = allData.reduce((sum, item) => sum + (item.foto_urls?.length || 0), 0);
-        const totalPelanggan = allData.length;
-        document.getElementById('totalFotos').innerText = totalFotos;
-        document.getElementById('totalPelanggan').innerText = totalPelanggan;
-        document.getElementById('totalUploads').innerText = totalPelanggan;
-    }
-    
-    // Render grid
-    function renderGrid(data) {
-        const grid = document.getElementById('fotoGrid');
+        let supabaseClient = null;
+        let allData = [];
         
-        if (!data || data.length === 0) {
-            grid.innerHTML = '<div class="loading">📷 Belum ada data foto</div>';
-            return;
+        // Inisialisasi
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        // Login
+        document.getElementById('loginBtn').onclick = () => {
+            const pass = document.getElementById('adminPassword').value;
+            if (pass === ADMIN_PASSWORD) {
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('dashboardContainer').style.display = 'block';
+                loadData();
+            } else {
+                document.getElementById('loginError').innerText = 'Password salah!';
+            }
+        };
+        
+        // Logout
+        document.getElementById('logoutBtn').onclick = () => {
+            document.getElementById('loginContainer').style.display = 'flex';
+            document.getElementById('dashboardContainer').style.display = 'none';
+            document.getElementById('adminPassword').value = '';
+        };
+        
+        // Load data
+        async function loadData() {
+            const grid = document.getElementById('fotoGrid');
+            grid.innerHTML = '<div class="loading">⏳ Memuat data...</div>';
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('hasil_foto')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                allData = data || [];
+                updateStats();
+                renderGrid(allData);
+                
+            } catch (err) {
+                grid.innerHTML = `<div class="loading">❌ Error: ${err.message}</div>`;
+                console.error(err);
+            }
         }
         
-        grid.innerHTML = data.map(item => `
-            <div class="foto-card">
-                <div class="foto-preview">
-                    ${item.foto_urls && item.foto_urls[0] ? 
-                        `<img src="${item.foto_urls[0]}" alt="preview" loading="lazy">` : 
-                        '<div style="padding:80px; color:#999;">No photo</div>'}
-                    ${item.gif_url ? '<div class="gif-badge">🎬 GIF</div>' : ''}
-                </div>
-                <div class="foto-info">
-                    <h3>${escapeHtml(item.nama)}</h3>
-                    <div class="date">📅 ${new Date(item.created_at).toLocaleString('id-ID')}</div>
-                    <div class="count">📸 ${item.foto_urls?.length || 0} foto ${item.gif_url ? ' + GIF' : ''}</div>
-                </div>
-                <div class="foto-actions">
-                    <button class="btn-view" onclick="viewDetail('${item.id}')">🔍 Lihat Detail</button>
-                    <button class="btn-delete" onclick="deleteData('${item.id}', '${escapeHtml(item.nama)}')">🗑️ Hapus</button>
-                </div>
-            </div>
-        `).join('');
-    }
-    
-    // View detail
-    window.viewDetail = async (id) => {
-        const item = allData.find(d => d.id == id);
-        if (!item) return;
+        // Update statistik
+        function updateStats() {
+            const totalFotos = allData.reduce((sum, item) => sum + (item.foto_urls?.length || 0), 0);
+            const totalPelanggan = allData.length;
+            document.getElementById('totalFotos').innerText = totalFotos;
+            document.getElementById('totalPelanggan').innerText = totalPelanggan;
+            document.getElementById('totalUploads').innerText = totalPelanggan;
+        }
         
-        const modal = document.getElementById('modal');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalBody = document.getElementById('modalBody');
+        // Render grid
+        function renderGrid(data) {
+            const grid = document.getElementById('fotoGrid');
+            
+            if (!data || data.length === 0) {
+                grid.innerHTML = '<div class="loading">📷 Belum ada data foto</div>';
+                return;
+            }
+            
+            grid.innerHTML = data.map(item => `
+                <div class="foto-card">
+                    <div class="foto-preview">
+                        ${item.foto_urls && item.foto_urls[0] ? 
+                            `<img src="${item.foto_urls[0]}" alt="preview" loading="lazy">` : 
+                            '<div style="padding:80px; color:#999;">No photo</div>'}
+                        ${item.gif_url ? '<div class="gif-badge">🎬 GIF</div>' : ''}
+                    </div>
+                    <div class="foto-info">
+                        <h3>${escapeHtml(item.nama)}</h3>
+                        <div class="date">📅 ${new Date(item.created_at).toLocaleString('id-ID')}</div>
+                        <div class="count">📸 ${item.foto_urls?.length || 0} foto ${item.gif_url ? ' + GIF' : ''}</div>
+                    </div>
+                    <div class="foto-actions">
+                        <button class="btn-view" onclick="window.viewDetail('${item.id}')">🔍 Lihat Detail</button>
+                        <button class="btn-delete" onclick="window.deleteData('${item.id}', '${escapeHtml(item.nama)}')">🗑️ Hapus</button>
+                    </div>
+                </div>
+            `).join('');
+        }
         
-        modalTitle.innerText = `📸 ${item.nama}`;
-        
-        let fotoHtml = '';
-        if (item.foto_urls && item.foto_urls.length) {
-            fotoHtml = `
-                <h3 style="margin-bottom: 12px;">Foto-foto:</h3>
-                <div class="modal-foto-grid">
-                    ${item.foto_urls.map(url => `<img src="${url}" alt="foto" loading="lazy">`).join('')}
+        // View detail
+        window.viewDetail = async (id) => {
+            const item = allData.find(d => d.id == id);
+            if (!item) return;
+            
+            const modal = document.getElementById('modal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            
+            modalTitle.innerText = `📸 ${item.nama}`;
+            
+            let fotoHtml = '';
+            if (item.foto_urls && item.foto_urls.length) {
+                fotoHtml = `
+                    <h3 style="margin-bottom: 12px;">Foto-foto:</h3>
+                    <div class="modal-foto-grid">
+                        ${item.foto_urls.map(url => `<img src="${url}" alt="foto" loading="lazy">`).join('')}
+                    </div>
+                `;
+            }
+            
+            let gifHtml = '';
+            if (item.gif_url) {
+                gifHtml = `
+                    <h3 style="margin: 20px 0 12px;">🎬 GIF Animasi:</h3>
+                    <div class="modal-gif">
+                        <img src="${item.gif_url}" alt="gif">
+                    </div>
+                `;
+            }
+            
+            modalBody.innerHTML = `
+                <div style="margin-bottom: 16px;">
+                    <p><strong>Nama:</strong> ${escapeHtml(item.nama)}</p>
+                    <p><strong>Tanggal:</strong> ${new Date(item.created_at).toLocaleString('id-ID')}</p>
+                    <p><strong>Jumlah foto:</strong> ${item.foto_urls?.length || 0} foto</p>
+                    ${item.gif_url ? '<p><strong>GIF:</strong> Ada</p>' : ''}
+                </div>
+                ${fotoHtml}
+                ${gifHtml}
+                <div style="margin-top: 20px; display: flex; gap: 10px;">
+                    <button onclick="window.closeModal()" style="padding: 10px 20px; background: #2c3e50; color:white; border:none; border-radius:12px;">Tutup</button>
+                    <button onclick="window.copyLinks('${id}')" style="padding: 10px 20px; background: #2196F3; color:white; border:none; border-radius:12px;">📋 Copy Link Foto</button>
                 </div>
             `;
-        }
-        
-        let gifHtml = '';
-        if (item.gif_url) {
-            gifHtml = `
-                <h3 style="margin: 20px 0 12px;">🎬 GIF Animasi:</h3>
-                <div class="modal-gif">
-                    <img src="${item.gif_url}" alt="gif">
-                </div>
-            `;
-        }
-        
-        modalBody.innerHTML = `
-            <div style="margin-bottom: 16px;">
-                <p><strong>Nama:</strong> ${escapeHtml(item.nama)}</p>
-                <p><strong>Tanggal:</strong> ${new Date(item.created_at).toLocaleString('id-ID')}</p>
-                <p><strong>Jumlah foto:</strong> ${item.foto_urls?.length || 0} foto</p>
-                ${item.gif_url ? '<p><strong>GIF:</strong> Ada</p>' : ''}
-            </div>
-            ${fotoHtml}
-            ${gifHtml}
-            <div style="margin-top: 20px; display: flex; gap: 10px;">
-                <button onclick="closeModal()" style="padding: 10px 20px; background: #2c3e50; color:white; border:none; border-radius:12px;">Tutup</button>
-                <button onclick="copyLinks('${id}')" style="padding: 10px 20px; background: #2196F3; color:white; border:none; border-radius:12px;">📋 Copy Link Foto</button>
-            </div>
-        `;
-        
-        modal.style.display = 'block';
-    };
-    
-    window.copyLinks = (id) => {
-        const item = allData.find(d => d.id == id);
-        if (item && item.foto_urls && item.foto_urls[0]) {
-            navigator.clipboard.writeText(item.foto_urls[0]);
-            alert('Link foto pertama sudah di-copy!');
-        }
-    };
-    
-    window.closeModal = () => {
-        document.getElementById('modal').style.display = 'none';
-    };
-    
-    // Delete data
-    window.deleteData = async (id, nama) => {
-        if (!confirm(`Hapus semua foto milik "${nama}"?`)) return;
-        
-        try {
-            // Hapus dari database
-            const { error } = await supabase.from('hasil_foto').delete().eq('id', id);
-            if (error) throw error;
             
-            alert(`✅ Data ${nama} berhasil dihapus!`);
+            modal.style.display = 'block';
+        };
+        
+        window.copyLinks = (id) => {
+            const item = allData.find(d => d.id == id);
+            if (item && item.foto_urls && item.foto_urls[0]) {
+                navigator.clipboard.writeText(item.foto_urls[0]);
+                alert('Link foto pertama sudah di-copy!');
+            }
+        };
+        
+        window.closeModal = () => {
+            document.getElementById('modal').style.display = 'none';
+        };
+        
+        // Delete data
+        window.deleteData = async (id, nama) => {
+            if (!confirm(`Hapus semua foto milik "${nama}"?`)) return;
+            
+            try {
+                const { error } = await supabaseClient.from('hasil_foto').delete().eq('id', id);
+                if (error) throw error;
+                
+                alert(`✅ Data ${nama} berhasil dihapus!`);
+                loadData();
+                
+            } catch (err) {
+                alert(`❌ Gagal hapus: ${err.message}`);
+            }
+        };
+        
+        // Search
+        document.getElementById('searchBtn').onclick = () => {
+            const keyword = document.getElementById('searchNama').value.toLowerCase();
+            if (!keyword) {
+                renderGrid(allData);
+                return;
+            }
+            const filtered = allData.filter(item => item.nama.toLowerCase().includes(keyword));
+            renderGrid(filtered);
+        };
+        
+        // Refresh
+        document.getElementById('refreshBtn').onclick = () => {
+            document.getElementById('searchNama').value = '';
             loadData();
-            
-        } catch (err) {
-            alert(`❌ Gagal hapus: ${err.message}`);
-        }
-    };
-    
-    // Search
-    document.getElementById('searchBtn').onclick = () => {
-        const keyword = document.getElementById('searchNama').value.toLowerCase();
-        if (!keyword) {
-            renderGrid(allData);
-            return;
-        }
-        const filtered = allData.filter(item => item.nama.toLowerCase().includes(keyword));
-        renderGrid(filtered);
-    };
-    
-    // Refresh
-    document.getElementById('refreshBtn').onclick = () => {
-        document.getElementById('searchNama').value = '';
-        loadData();
-    };
-    
-    // Enter key search
-    document.getElementById('searchNama').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') document.getElementById('searchBtn').click();
-    });
-    
-    // Escape close modal
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeModal();
-    });
-    
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
+        };
+        
+        // Enter key search
+        document.getElementById('searchNama').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') document.getElementById('searchBtn').click();
         });
-    }
+        
+        // Escape close modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') window.closeModal();
+        });
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+    })();
 </script>
 </body>
 </html>
