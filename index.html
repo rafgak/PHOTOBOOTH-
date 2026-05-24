@@ -124,109 +124,123 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // 🔧 GANTI DENGAN PUNYA LU (SUDAH BENER) 🔧
-    const SUPABASE_URL = "https://fhuulpwvoyubgmnooqrf.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZodXVscHd2b3l1Ymdtbm9vcXJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NDIzMzQsImV4cCI6MjA5NTExODMzNH0.Dm8inSoHfc1ICBcT1TVLSJWiVZ6rqdifZUtWCLAFTNw";
+    (function() {
+        // 🔧 KONFIGURASI SUPABASE 🔧
+        const SUPABASE_URL = "https://fhuulpwvoyubgmnooqrf.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZodXVscHd2b3l1Ymdtbm9vcXJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NDIzMzQsImV4cCI6MjA5NTExODMzNH0.Dm8inSoHfc1ICBcT1TVLSJWiVZ6rqdifZUtWCLAFTNw";
 
-    let supabase = null;
+        // Inisialisasi Supabase
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // Inisialisasi supabase
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    supabase = supabaseClient;
+        // DOM elements
+        const searchBtn = document.getElementById('searchBtn');
+        const searchInput = document.getElementById('searchInput');
+        const resultContainer = document.getElementById('resultContainer');
+        const loadingDiv = document.getElementById('loading');
 
-    document.getElementById('searchBtn').onclick = () => search();
-    document.getElementById('searchInput').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') search();
-    });
+        // Event listeners
+        searchBtn.onclick = () => search();
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') search();
+        });
 
-    async function search() {
-        const nama = document.getElementById('searchInput').value.trim();
-        if (!nama) {
-            alert('Masukkan nama dulu ya');
-            return;
-        }
-
-        const container = document.getElementById('resultContainer');
-        const loading = document.getElementById('loading');
-        
-        loading.style.display = 'block';
-        container.innerHTML = '';
-
-        try {
-            const { data, error } = await supabase
-                .from('hasil_foto')
-                .select('*')
-                .ilike('nama', `%${nama}%`)
-                .order('created_at', { ascending: false });
-
-            loading.style.display = 'none';
-
-            if (error) throw error;
-
-            if (!data || data.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <span>📷</span>
-                        <p>Wah, belum ada hasil foto untuk "${nama}"</p>
-                        <p style="font-size:0.8rem">Coba cek nama lain atau coba lagi nanti</p>
-                    </div>
-                `;
+        async function search() {
+            const nama = searchInput.value.trim();
+            if (!nama) {
+                alert('Masukkan nama dulu ya');
                 return;
             }
 
-            let html = '';
-            for (let item of data) {
-                let fotoHtml = '';
-                if (item.foto_urls && item.foto_urls.length) {
-                    fotoHtml = `
-                        <div class="result-grid">
-                            ${item.foto_urls.map(url => `
-                                <div class="foto-item">
-                                    <img src="${url}" alt="foto">
-                                    <div class="foto-info">
-                                        <h4>📸 ${item.nama}</h4>
-                                        <div class="date">${new Date(item.created_at).toLocaleDateString('id-ID')}</div>
-                                        <a href="${url}" download class="btn-download">⬇️ Download</a>
+            loadingDiv.style.display = 'block';
+            resultContainer.innerHTML = '';
+
+            try {
+                const { data, error } = await supabase
+                    .from('hasil_foto')
+                    .select('*')
+                    .ilike('nama', `%${nama}%`)
+                    .order('created_at', { ascending: false });
+
+                loadingDiv.style.display = 'none';
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    resultContainer.innerHTML = `
+                        <div class="empty-state">
+                            <span>📷</span>
+                            <p>Wah, belum ada hasil foto untuk "${nama}"</p>
+                            <p style="font-size:0.8rem">Coba cek nama lain atau coba lagi nanti</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '';
+                for (let item of data) {
+                    let fotoHtml = '';
+                    if (item.foto_urls && item.foto_urls.length) {
+                        fotoHtml = `
+                            <div class="result-grid">
+                                ${item.foto_urls.map(url => `
+                                    <div class="foto-item">
+                                        <img src="${url}" alt="foto">
+                                        <div class="foto-info">
+                                            <h4>📸 ${escapeHtml(item.nama)}</h4>
+                                            <div class="date">${new Date(item.created_at).toLocaleDateString('id-ID')}</div>
+                                            <a href="${url}" download class="btn-download">⬇️ Download</a>
+                                        </div>
                                     </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
-                }
-
-                let gifHtml = '';
-                if (item.gif_url) {
-                    gifHtml = `
-                        <div style="margin-top: 24px; background:#f9f9f9; border-radius:20px; padding:20px;">
-                            <h4 style="margin-bottom:12px">🎬 GIF Animasi</h4>
-                            <img src="${item.gif_url}" style="max-width:100%; border-radius:12px" alt="gif">
-                            <div style="margin-top:12px">
-                                <a href="${item.gif_url}" download class="btn-download">⬇️ Download GIF</a>
+                                `).join('')}
                             </div>
+                        `;
+                    }
+
+                    let gifHtml = '';
+                    if (item.gif_url) {
+                        gifHtml = `
+                            <div style="margin-top: 24px; background:#f9f9f9; border-radius:20px; padding:20px;">
+                                <h4 style="margin-bottom:12px">🎬 GIF Animasi</h4>
+                                <img src="${item.gif_url}" style="max-width:100%; border-radius:12px" alt="gif">
+                                <div style="margin-top:12px">
+                                    <a href="${item.gif_url}" download class="btn-download">⬇️ Download GIF</a>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    html += `
+                        <div style="margin-bottom: 40px;">
+                            <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; margin-bottom: 16px;">
+                                <h3 style="font-size:1.2rem; color:#2c3e50;">${escapeHtml(item.nama)}</h3>
+                                <span style="font-size:0.7rem; color:#aaa;">${new Date(item.created_at).toLocaleString('id-ID')}</span>
+                            </div>
+                            ${fotoHtml}
+                            ${gifHtml}
                         </div>
+                        <hr style="margin: 32px 0; border: none; border-top: 1px solid #eee;">
                     `;
                 }
+                resultContainer.innerHTML = html;
 
-                html += `
-                    <div style="margin-bottom: 40px;">
-                        <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; margin-bottom: 16px;">
-                            <h3 style="font-size:1.2rem; color:#2c3e50;">${item.nama}</h3>
-                            <span style="font-size:0.7rem; color:#aaa;">${new Date(item.created_at).toLocaleString('id-ID')}</span>
-                        </div>
-                        ${fotoHtml}
-                        ${gifHtml}
-                    </div>
-                    <hr style="margin: 32px 0; border: none; border-top: 1px solid #eee;">
-                `;
+            } catch (err) {
+                loadingDiv.style.display = 'none';
+                resultContainer.innerHTML = `<div class="empty-state"><span>⚠️</span><p>Gagal memuat, coba lagi ya</p><p style="font-size:0.7rem">${err.message}</p></div>`;
+                console.error(err);
             }
-            container.innerHTML = html;
-
-        } catch (err) {
-            loading.style.display = 'none';
-            container.innerHTML = `<div class="empty-state"><span>⚠️</span><p>Gagal memuat, coba lagi ya</p><p style="font-size:0.7rem">${err.message}</p></div>`;
-            console.error(err);
         }
-    }
+
+        // Fungsi keamanan untuk menghindari XSS
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+    })();
 </script>
 </body>
 </html>
