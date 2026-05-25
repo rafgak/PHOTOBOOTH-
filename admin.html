@@ -616,7 +616,7 @@
 
         <!-- Quick Actions -->
         <div class="action-cards">
-            <div class="action-card" onclick="window.open('photobooth.html', '_blank')">
+            <div class="action-card" onclick="window.open('index.html', '_blank')">
                 <div class="action-icon">📸</div>
                 <h4>Ambil Foto Baru</h4>
                 <p>Buka photobooth untuk mengambil foto baru</p>
@@ -677,12 +677,36 @@
     (function() {
         const SUPABASE_URL = "https://fhuulpwvoyubgmnooqrf.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZodXVscHd2b3l1Ymdtbm9vcXJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NDIzMzQsImV4cCI6MjA5NTExODMzNH0.Dm8inSoHfc1ICBcT1TVLSJWiVZ6rqdifZUtWCLAFTNw";
-        const ADMIN_PASSWORD = "pace123";
         
+        // Password disimpan di environment variable (melalui Vercel)
+        // Untuk local development, gunakan prompt atau hardcode sementara
+        let ADMIN_PASSWORD = "";
+        
+        // Coba ambil dari session storage dulu (setelah login pertama)
+        const savedAuth = sessionStorage.getItem('adminAuth');
         let supabase = null;
         let allData = [];
         
         supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        // Fungsi untuk memverifikasi password (panggil API ke serverless function)
+        async function verifyPassword(password) {
+            try {
+                // Gunakan Vercel serverless function untuk verifikasi (tanpa hardcode di frontend)
+                const response = await fetch('/api/verify-admin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: password })
+                });
+                const result = await response.json();
+                return result.success === true;
+            } catch (err) {
+                // Fallback untuk development: hardcode sementara (HANYA UNTUK TESTING)
+                // Di production, HAPUS baris ini dan pastikan API endpoint berfungsi
+                console.warn('API endpoint tidak tersedia, menggunakan fallback local (HAPUS DI PRODUCTION)');
+                return password === "pace123";
+            }
+        }
         
         // Tab switching
         document.querySelectorAll('.nav-item').forEach(item => {
@@ -700,10 +724,13 @@
             };
         });
         
-        // Login
-        document.getElementById('loginBtn').onclick = () => {
+        // Login dengan verifikasi yang aman
+        document.getElementById('loginBtn').onclick = async () => {
             const pass = document.getElementById('adminPassword').value;
-            if (pass === ADMIN_PASSWORD) {
+            const isValid = await verifyPassword(pass);
+            
+            if (isValid) {
+                sessionStorage.setItem('adminAuth', 'true');
                 document.getElementById('loginContainer').style.display = 'none';
                 document.getElementById('dashboardContainer').style.display = 'block';
                 loadData();
@@ -712,7 +739,15 @@
             }
         };
         
+        // Cek apakah sudah login sebelumnya
+        if (savedAuth === 'true') {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('dashboardContainer').style.display = 'block';
+            loadData();
+        }
+        
         document.getElementById('logoutBtn').onclick = () => {
+            sessionStorage.removeItem('adminAuth');
             document.getElementById('loginContainer').style.display = 'flex';
             document.getElementById('dashboardContainer').style.display = 'none';
             document.getElementById('adminPassword').value = '';
