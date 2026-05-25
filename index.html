@@ -14,7 +14,6 @@
         }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         
-        /* Header */
         .header {
             text-align: center;
             margin-bottom: 30px;
@@ -22,7 +21,6 @@
         .header h1 { font-size: 2rem; color: #7C3AED; }
         .header p { color: #aaa; }
         
-        /* Camera */
         .camera-area {
             background: #1a1a2e;
             border-radius: 24px;
@@ -62,7 +60,6 @@
         }
         .capture-btn:hover { transform: scale(1.05); }
         
-        /* Countdown */
         .countdown {
             position: fixed;
             top: 50%;
@@ -76,7 +73,6 @@
             display: none;
         }
         
-        /* Gallery */
         .gallery {
             background: #1a1a2e;
             border-radius: 24px;
@@ -116,7 +112,6 @@
             cursor: pointer;
         }
         
-        /* Layout options */
         .layout-options {
             display: flex;
             gap: 20px;
@@ -140,7 +135,6 @@
             margin-top: 10px;
         }
         
-        /* Frame options */
         .frame-options {
             display: flex;
             gap: 15px;
@@ -157,7 +151,6 @@
         }
         .frame-btn.selected { background: #7C3AED; }
         
-        /* Buttons */
         .action-buttons {
             display: flex;
             gap: 15px;
@@ -173,14 +166,8 @@
             font-weight: bold;
             cursor: pointer;
         }
-        .btn-success {
-            background: #10B981;
-        }
-        .btn-warning {
-            background: #F59E0B;
-        }
+        .btn-success { background: #10B981; }
         
-        /* Loading */
         .loading {
             position: fixed;
             top: 0;
@@ -193,6 +180,7 @@
             justify-content: center;
             z-index: 1000;
             display: none;
+            flex-direction: column;
         }
         
         @media (max-width: 600px) {
@@ -256,10 +244,14 @@
 </div>
 
 <div class="countdown" id="countdown">3</div>
-<div class="loading" id="loading"><div style="text-align:center">⏳ MENGUPLOAD...<br><span id="loadingText"></span></div></div>
+<div class="loading" id="loading">
+    <div style="text-align:center">⏳ MENGUPLOAD...<br><br><span style="font-size:12px">Mohon tunggu</span></div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 <script>
+(function() {
     // Konfigurasi
     const SUPABASE_URL = "https://fhuulpwvoyubgmnooqrf.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZodXVscHd2b3l1Ymdtbm9vcXJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NDIzMzQsImV4cCI6MjA5NTExODMzNH0.Dm8inSoHfc1ICBcT1TVLSJWiVZ6rqdifZUtWCLAFTNw";
@@ -273,7 +265,7 @@
     let selectedFrame = "Modern";
     let sessionId = Math.random().toString(36).substring(2, 10);
     
-    // Inisialisasi
+    // Inisialisasi Supabase
     supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     
     // DOM Elements
@@ -287,7 +279,7 @@
     const selesaiBtn = document.getElementById('selesaiBtn');
     const layoutSection = document.getElementById('layoutSection');
     const uploadBtn = document.getElementById('uploadBtn');
-    const loading = document.getElementById('loading');
+    const loadingDiv = document.getElementById('loading');
     
     maxPhotoSpan.textContent = MAX_PHOTOS;
     
@@ -296,8 +288,10 @@
         try {
             stream = await navigator.mediaDevices.getUserMedia({ video: true });
             video.srcObject = stream;
+            console.log('Camera started');
         } catch (err) {
-            alert('Gagal akses kamera: ' + err.message);
+            alert('Gagal akses kamera: ' + err.message + '\n\nPastikan izin kamera diberikan dan menggunakan HTTPS (localhost atau Vercel)');
+            console.error(err);
         }
     }
     
@@ -308,9 +302,9 @@
             return;
         }
         
-        // Countdown
         let count = 3;
         countdownDiv.style.display = 'block';
+        countdownDiv.textContent = count;
         
         const interval = setInterval(() => {
             count--;
@@ -324,9 +318,11 @@
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
                 const ctx = canvas.getContext('2d');
+                
+                // Gambar video (udah mirror dari CSS)
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                 
-                // Mirror balik (karena video di-flip)
+                // Mirror balik (karena CSS sudah flip)
                 ctx.translate(canvas.width, 0);
                 ctx.scale(-1, 1);
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -336,7 +332,7 @@
                 photos.push(photoUrl);
                 updateGallery();
                 
-                // Flash
+                // Flash effect
                 const flash = document.createElement('div');
                 flash.style.position = 'fixed';
                 flash.style.top = 0;
@@ -365,12 +361,12 @@
         photoList.innerHTML = photos.map((photo, idx) => `
             <div class="photo-item" data-idx="${idx}">
                 <img src="${photo}" alt="foto ${idx+1}">
-                <div class="delete-btn" onclick="deletePhoto(${idx})">✕</div>
+                <div class="delete-btn" onclick="window.deletePhoto(${idx})">✕</div>
             </div>
         `).join('');
     }
     
-    // Hapus foto
+    // Hapus foto (global)
     window.deletePhoto = function(idx) {
         photos.splice(idx, 1);
         updateGallery();
@@ -406,12 +402,16 @@
     });
     document.querySelector('.frame-btn').classList.add('selected');
     
-    // Upload & cetak layout
+    // Upload
     uploadBtn.onclick = async () => {
-        loading.style.display = 'flex';
+        if (photos.length === 0) {
+            alert('Tidak ada foto untuk diupload!');
+            return;
+        }
+        
+        loadingDiv.style.display = 'flex';
         
         try {
-            // Upload foto ke Supabase Storage
             const fotoUrls = [];
             const timestamp = Date.now();
             
@@ -433,6 +433,7 @@
                 nama: "Pelanggan",
                 foto_urls: fotoUrls,
                 layout: selectedLayout,
+                frame: selectedFrame,
                 session_id: sessionId,
                 created_at: new Date().toISOString()
             };
@@ -440,12 +441,12 @@
             const { error } = await supabase.from('hasil_foto').insert([data]);
             if (error) throw error;
             
-            // Tampilkan QR
-            loading.style.display = 'none';
+            // Tampilkan hasil
+            loadingDiv.style.display = 'none';
             showQRResult();
             
         } catch (err) {
-            loading.style.display = 'none';
+            loadingDiv.style.display = 'none';
             alert('Error: ' + err.message);
         }
     };
@@ -455,7 +456,7 @@
             <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: #0f0f0f; color: white; padding: 20px; text-align: center;">
                 <h1 style="color: #10B981; margin-bottom: 20px;">✅ UPLOAD BERHASIL!</h1>
                 <p style="margin-bottom: 20px;">${photos.length} foto berhasil diupload</p>
-                <div id="qrCode" style="margin-bottom: 20px;"></div>
+                <canvas id="qrCanvas" style="margin-bottom: 20px;"></canvas>
                 <p style="margin-bottom: 10px;">Scan QR untuk lihat hasil:</p>
                 <p style="font-size: 12px; color: #aaa; word-break: break-all;">${WEB_URL}/index.html?session=${sessionId}</p>
                 <div style="margin-top: 30px;">
@@ -465,32 +466,15 @@
         `;
         
         const url = `${WEB_URL}/index.html?session=${sessionId}`;
-        const qr = QRCodeGenerator(url, 200);
-        document.getElementById('qrCode').appendChild(qr);
-    }
-    
-    // QR Code generator sederhana
-    function QRCodeGenerator(text, size) {
-        const canvas = document.createElement('canvas');
-        canvas.width = size;
-        canvas.height = size;
-        QRCode.toCanvas(canvas, text, (error) => {
+        QRCode.toCanvas(document.getElementById('qrCanvas'), url, { width: 200 }, (error) => {
             if (error) console.error(error);
         });
-        return canvas;
     }
     
-    // Load QR library
-    const qrScript = document.createElement('script');
-    qrScript.src = 'https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js';
-    qrScript.onload = () => {
-        console.log('QR library loaded');
-    };
-    document.head.appendChild(qrScript);
-    
-    // Start
+    // Start camera
     startCamera();
     captureBtn.onclick = capturePhoto;
+})();
 </script>
 </body>
 </html>
