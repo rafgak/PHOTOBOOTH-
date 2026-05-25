@@ -2,902 +2,467 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin - School Photo Studio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>School Photo Booth - SMAM 4 Surabaya</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f0f4f8;
-            color: #1a2c3e;
-        }
-
-        /* Login Page */
-        .login-container {
+            background: linear-gradient(135deg, #1a2c3e 0%, #2c4a6e 100%);
             min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #fff 0%, #a5f3fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .header p { color: rgba(255,255,255,0.7); margin-top: 8px; }
+        
+        /* Camera Area */
+        .camera-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .camera-container {
+            position: relative;
+            background: #000;
+            border-radius: 16px;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+        .camera-overlay {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+        }
+        .capture-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .capture-btn:hover { transform: scale(1.05); }
+        
+        /* Countdown */
+        .countdown {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 6rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 0 20px rgba(0,0,0,0.5);
+            z-index: 100;
+            display: none;
+            background: rgba(0,0,0,0.7);
+            padding: 30px 50px;
+            border-radius: 50px;
+        }
+        
+        /* Gallery */
+        .gallery-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .gallery-card h3 { margin-bottom: 15px; color: #a5f3fc; }
+        .photo-list {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .photo-item {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            background: #2a2a2a;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+        .photo-item.selected { border-color: #10b981; }
+        .photo-item img { width: 100%; height: 100%; object-fit: cover; }
+        .delete-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #1a2c3e 0%, #2c4a6e 100%);
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        /* Layout Options */
+        .layout-options {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .layout-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 15px;
+            cursor: pointer;
+            text-align: center;
+            border: 2px solid transparent;
+            flex: 1;
+            min-width: 150px;
+        }
+        .layout-card.selected { border-color: #7c3aed; background: rgba(124,58,237,0.2); }
+        .layout-preview {
+            font-family: monospace;
+            font-size: 12px;
+            margin-top: 10px;
+            color: #aaa;
+        }
+        
+        /* Frame Options */
+        .frame-options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .frame-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+        }
+        .frame-btn.selected { background: #7c3aed; }
+        
+        /* Buttons */
+        .action-buttons { display: flex; gap: 15px; margin-top: 20px; }
+        .btn-primary {
+            background: #7c3aed;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-success { background: #10b981; }
+        
+        /* Loading */
+        .loading {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            z-index: 1000;
-        }
-
-        .login-box {
-            background: white;
-            border-radius: 24px;
-            padding: 48px 40px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 20px 35px -10px rgba(0,0,0,0.2);
-            text-align: center;
-        }
-
-        .login-box .logo {
-            font-size: 48px;
-            margin-bottom: 16px;
-        }
-
-        .login-box h2 {
-            font-size: 24px;
-            font-weight: 700;
-            color: #1a2c3e;
-            margin-bottom: 8px;
-        }
-
-        .login-box p {
-            color: #6c7a8a;
-            font-size: 14px;
-            margin-bottom: 32px;
-        }
-
-        .login-box input {
-            width: 100%;
-            padding: 14px 18px;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 15px;
-            margin-bottom: 20px;
-            transition: all 0.2s;
-        }
-
-        .login-box input:focus {
-            outline: none;
-            border-color: #2c4a6e;
-            box-shadow: 0 0 0 3px rgba(44,74,110,0.1);
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 14px;
-            background: #2c4a6e;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .login-btn:hover {
-            background: #1a2c3e;
-        }
-
-        /* Dashboard Layout */
-        .dashboard-container {
-            display: none;
-        }
-
-        /* Top Navigation */
-        .top-nav {
-            background: white;
-            border-bottom: 1px solid #e2e8f0;
-            padding: 0 24px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .nav-content {
-            max-width: 1400px;
-            margin: 0 auto;
+            background: rgba(0,0,0,0.9);
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 0;
-        }
-
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-icon {
-            font-size: 28px;
-        }
-
-        .logo-text h3 {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1a2c3e;
-        }
-
-        .logo-text p {
-            font-size: 11px;
-            color: #6c7a8a;
-        }
-
-        .nav-menu {
-            display: flex;
-            gap: 8px;
-        }
-
-        .nav-item {
-            padding: 8px 20px;
-            border-radius: 8px;
-            color: #6c7a8a;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .nav-item.active {
-            background: #e8f0fe;
-            color: #2c4a6e;
-        }
-
-        .nav-item:hover:not(.active) {
-            background: #f1f5f9;
-            color: #1a2c3e;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .admin-name {
-            font-size: 14px;
-            font-weight: 500;
-            color: #1a2c3e;
-        }
-
-        .logout-nav {
-            background: none;
-            border: none;
-            color: #ef4444;
-            cursor: pointer;
-            font-size: 14px;
-            padding: 8px 16px;
-            border-radius: 8px;
-            transition: background 0.2s;
-        }
-
-        .logout-nav:hover {
-            background: #fef2f2;
-        }
-
-        /* Main Content */
-        .main-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 24px;
-        }
-
-        /* Welcome Section */
-        .welcome-banner {
-            background: linear-gradient(135deg, #2c4a6e 0%, #1a2c3e 100%);
-            border-radius: 20px;
-            padding: 32px 40px;
-            margin-bottom: 32px;
-            color: white;
-        }
-
-        .welcome-banner h1 {
-            font-size: 28px;
-            margin-bottom: 8px;
-        }
-
-        .welcome-banner p {
-            opacity: 0.8;
-            font-size: 14px;
-        }
-
-        /* Stats Cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            margin-bottom: 32px;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 20px;
-            padding: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            border: 1px solid #e2e8f0;
-        }
-
-        .stat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .stat-icon {
-            font-size: 32px;
-        }
-
-        .stat-value {
-            font-size: 32px;
-            font-weight: 700;
-            color: #1a2c3e;
-            margin-bottom: 4px;
-        }
-
-        .stat-label {
-            font-size: 14px;
-            color: #6c7a8a;
-        }
-
-        /* Action Cards */
-        .action-cards {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-bottom: 32px;
-        }
-
-        .action-card {
-            background: white;
-            border-radius: 20px;
-            padding: 24px;
-            text-align: center;
-            border: 1px solid #e2e8f0;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-
-        .action-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-        }
-
-        .action-icon {
-            font-size: 40px;
-            margin-bottom: 16px;
-        }
-
-        .action-card h4 {
-            font-size: 18px;
-            margin-bottom: 8px;
-            color: #1a2c3e;
-        }
-
-        .action-card p {
-            font-size: 13px;
-            color: #6c7a8a;
-        }
-
-        /* Data Table */
-        .data-card {
-            background: white;
-            border-radius: 20px;
-            border: 1px solid #e2e8f0;
-            overflow: hidden;
-        }
-
-        .card-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
-        .card-header h3 {
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .search-area {
-            display: flex;
-            gap: 12px;
-        }
-
-        .search-area input {
-            padding: 10px 16px;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 30px;
-            width: 260px;
-            font-size: 14px;
-        }
-
-        .search-area input:focus {
-            outline: none;
-            border-color: #2c4a6e;
-        }
-
-        .refresh-btn {
-            background: #f1f5f9;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 30px;
-            color: #475569;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background 0.2s;
-        }
-
-        .refresh-btn:hover {
-            background: #e2e8f0;
-        }
-
-        .table-wrapper {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            text-align: left;
-            padding: 16px 20px;
-            background: #f8fafc;
-            font-weight: 600;
-            font-size: 13px;
-            color: #475569;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        td {
-            padding: 16px 20px;
-            border-bottom: 1px solid #f1f5f9;
-            font-size: 14px;
-        }
-
-        .customer-name {
-            font-weight: 600;
-            color: #1a2c3e;
-        }
-
-        .photo-badge {
-            display: inline-block;
-            background: #e0e7ff;
-            color: #4338ca;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .gif-badge {
-            background: #fef3c7;
-            color: #d97706;
-            margin-left: 8px;
-        }
-
-        .btn-detail {
-            background: none;
-            border: none;
-            color: #3b82f6;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            padding: 6px 12px;
-            border-radius: 6px;
-        }
-
-        .btn-detail:hover {
-            background: #eff6ff;
-        }
-
-        .btn-delete {
-            background: none;
-            border: none;
-            color: #ef4444;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            padding: 6px 12px;
-            border-radius: 6px;
-            margin-left: 8px;
-        }
-
-        .btn-delete:hover {
-            background: #fef2f2;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #94a3b8;
-        }
-
-        .loading-state {
-            text-align: center;
-            padding: 40px;
-            color: #94a3b8;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 1000;
             align-items: center;
             justify-content: center;
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
         }
-
-        .modal-content {
-            background: white;
-            border-radius: 24px;
-            max-width: 700px;
-            width: 90%;
-            max-height: 85vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            background: white;
-        }
-
-        .modal-header h3 {
-            font-size: 20px;
-            font-weight: 600;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 28px;
-            cursor: pointer;
-            color: #94a3b8;
-        }
-
-        .modal-body {
-            padding: 24px;
-        }
-
-        .modal-photo-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 16px;
-            margin: 20px 0;
-        }
-
-        .modal-photo-grid img {
-            width: 100%;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .info-row {
-            background: #f8fafc;
-            padding: 16px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-
-        .info-row p {
-            margin-bottom: 8px;
-        }
-
-        @media (max-width: 1024px) {
-            .stats-grid, .action-cards {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .stats-grid, .action-cards {
-                grid-template-columns: 1fr;
-            }
-            .search-area {
-                flex-direction: column;
-                width: 100%;
-            }
-            .search-area input {
-                width: 100%;
-            }
-            .nav-menu {
-                display: none;
-            }
+        
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .photo-item { width: 70px; height: 70px; }
+            .layout-card { min-width: 120px; }
         }
     </style>
 </head>
 <body>
-
-<!-- Login Page -->
-<div id="loginContainer" class="login-container">
-    <div class="login-box">
-        <div class="logo">📸</div>
-        <h2>School Photo Studio</h2>
-        <p>Admin Dashboard - Masuk untuk mengelola</p>
-        <input type="password" id="adminPassword" placeholder="Password Admin">
-        <button class="login-btn" id="loginBtn">Masuk ke Dashboard</button>
-        <div id="loginError" style="color:#ef4444; margin-top:16px; font-size:14px;"></div>
+<div class="container">
+    <div class="header">
+        <h1>📸 SMAM 4 Surabaya</h1>
+        <p>School Photo Booth - Ambil foto kenanganmu</p>
     </div>
-</div>
-
-<!-- Dashboard -->
-<div id="dashboardContainer" class="dashboard-container">
-    <!-- Top Navigation -->
-    <div class="top-nav">
-        <div class="nav-content">
-            <div class="logo-area">
-                <div class="logo-icon">📸</div>
-                <div class="logo-text">
-                    <h3>School Photo Studio</h3>
-                    <p>Management System</p>
-                </div>
-            </div>
-            <div class="nav-menu">
-                <div class="nav-item active" data-tab="dashboard">Dashboard</div>
-                <div class="nav-item" data-tab="data">Data Foto</div>
-            </div>
-            <div class="user-info">
-                <span class="admin-name">Admin Sekolah</span>
-                <button class="logout-nav" id="logoutBtn">🚪 Keluar</button>
+    
+    <div class="camera-card">
+        <div class="camera-container">
+            <video id="video" autoplay playsinline></video>
+            <div class="camera-overlay">
+                <button class="capture-btn" id="captureBtn">📸 AMBIL FOTO</button>
             </div>
         </div>
     </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Welcome Banner -->
-        <div class="welcome-banner">
-            <h1>Selamat datang, Admin</h1>
-            <p>Kelola semua hasil foto siswa dan kegiatan sekolah</p>
+    
+    <div class="gallery-card" id="gallery" style="display: none;">
+        <h3>📸 Foto Tersimpan (<span id="photoCount">0</span>/<span id="maxPhoto">10</span>)</h3>
+        <div class="photo-list" id="photoList"></div>
+        <div class="action-buttons">
+            <button class="btn-primary" id="selesaiBtn">✅ SELESAI & LANJUT</button>
         </div>
-
-        <!-- Stats Cards -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-header">
-                    <span class="stat-icon">📸</span>
+    </div>
+    
+    <div id="layoutSection" style="display: none;">
+        <div class="gallery-card">
+            <h3>📐 Pilih Layout Cetak</h3>
+            <div class="layout-options" id="layoutOptions">
+                <div class="layout-card" data-layout="1strip">
+                    <div>📄 1 STRIP</div>
+                    <div class="layout-preview">┌─┐ ┌─┐ ┌─┐<br>│1│ │2│ │3│<br>└─┘ └─┘ └─┘</div>
                 </div>
-                <div class="stat-value" id="totalData">0</div>
-                <div class="stat-label">Total Sesi Foto</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-header">
-                    <span class="stat-icon">🖼️</span>
-                </div>
-                <div class="stat-value" id="totalPhotos">0</div>
-                <div class="stat-label">Total Foto</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-header">
-                    <span class="stat-icon">👥</span>
-                </div>
-                <div class="stat-value" id="totalCustomers">0</div>
-                <div class="stat-label">Pelanggan</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-header">
-                    <span class="stat-icon">🎬</span>
-                </div>
-                <div class="stat-value" id="totalGifs">0</div>
-                <div class="stat-label">Total GIF</div>
-            </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="action-cards">
-            <div class="action-card" onclick="window.open('index.html', '_blank')">
-                <div class="action-icon">📸</div>
-                <h4>Ambil Foto Baru</h4>
-                <p>Buka photobooth untuk mengambil foto baru</p>
-            </div>
-            <div class="action-card" onclick="refreshData()">
-                <div class="action-icon">🔄</div>
-                <h4>Refresh Data</h4>
-                <p>Perbarui tampilan data terbaru</p>
-            </div>
-            <div class="action-card">
-                <div class="action-icon">📊</div>
-                <h4>Laporan</h4>
-                <p>Lihat statistik lengkap</p>
-            </div>
-        </div>
-
-        <!-- Data Table -->
-        <div class="data-card">
-            <div class="card-header">
-                <h3>📋 Data Hasil Foto</h3>
-                <div class="search-area">
-                    <input type="text" id="searchInput" placeholder="Cari berdasarkan nama...">
-                    <button class="refresh-btn" id="refreshBtn">🔄 Refresh</button>
+                <div class="layout-card" data-layout="2strip">
+                    <div>📄 2 STRIP</div>
+                    <div class="layout-preview">┌─┐ ┌─┐<br>│1│ │2│<br>├─┼─┤<br>│3│ │4│<br>└─┘ └─┘</div>
                 </div>
             </div>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nama Pelanggan</th>
-                            <th>Tanggal & Waktu</th>
-                            <th>Detail</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="dataList">
-                        <tr><td colspan="4" class="loading-state">⏳ Memuat data...</td></tr>
-                    </tbody>
-                </table>
+            
+            <h3>🖼️ Pilih Bingkai</h3>
+            <div class="frame-options" id="frameOptions">
+                <button class="frame-btn" data-frame="Modern">Modern (Ungu)</button>
+                <button class="frame-btn" data-frame="Polaroid">Polaroid (Putih)</button>
+                <button class="frame-btn" data-frame="Classic">Classic (Emas)</button>
+                <button class="frame-btn" data-frame="Minimalis">Minimalis (Hitam)</button>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn-primary btn-success" id="uploadBtn">📤 UPLOAD & DAPATKAN QR</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal Detail -->
-<div id="modal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3 id="modalTitle">Detail Foto</h3>
-            <button class="modal-close" onclick="closeModal()">&times;</button>
-        </div>
-        <div class="modal-body" id="modalBody"></div>
-    </div>
-</div>
+<div class="countdown" id="countdown">3</div>
+<div class="loading" id="loading"><div style="text-align:center">⏳ MENGUPLOAD...<br><br><span style="font-size:12px">Mohon tunggu</span></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 <script>
-    (function() {
-        const SUPABASE_URL = "https://fhuulpwvoyubgmnooqrf.supabase.co";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZodXVscHd2b3l1Ymdtbm9vcXJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NDIzMzQsImV4cCI6MjA5NTExODMzNH0.Dm8inSoHfc1ICBcT1TVLSJWiVZ6rqdifZUtWCLAFTNw";
-        
-        // Password disimpan di environment variable (melalui Vercel)
-        // Untuk local development, gunakan prompt atau hardcode sementara
-        let ADMIN_PASSWORD = "";
-        
-        // Coba ambil dari session storage dulu (setelah login pertama)
-        const savedAuth = sessionStorage.getItem('adminAuth');
-        let supabase = null;
-        let allData = [];
-        
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        
-        // Fungsi untuk memverifikasi password (panggil API ke serverless function)
-        async function verifyPassword(password) {
-            try {
-                // Gunakan Vercel serverless function untuk verifikasi (tanpa hardcode di frontend)
-                const response = await fetch('/api/verify-admin', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ password: password })
-                });
-                const result = await response.json();
-                return result.success === true;
-            } catch (err) {
-                // Fallback untuk development: hardcode sementara (HANYA UNTUK TESTING)
-                // Di production, HAPUS baris ini dan pastikan API endpoint berfungsi
-                console.warn('API endpoint tidak tersedia, menggunakan fallback local (HAPUS DI PRODUCTION)');
-                return password === "pace123";
-            }
+(function() {
+    const SUPABASE_URL = "https://fhuulpwvoyubgmnooqrf.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZodXVscHd2b3l1Ymdtbm9vcXJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NDIzMzQsImV4cCI6MjA5NTExODMzNH0.Dm8inSoHfc1ICBcT1TVLSJWiVZ6rqdifZUtWCLAFTNw";
+    const WEB_URL = "https://photoboothsmamip.vercel.app";
+    const MAX_PHOTOS = 10;
+    
+    let supabase = null;
+    let stream = null;
+    let photos = [];
+    let selectedLayout = "2strip";
+    let selectedFrame = "Modern";
+    let sessionId = Math.random().toString(36).substring(2, 10);
+    
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    
+    const video = document.getElementById('video');
+    const captureBtn = document.getElementById('captureBtn');
+    const countdownDiv = document.getElementById('countdown');
+    const gallery = document.getElementById('gallery');
+    const photoList = document.getElementById('photoList');
+    const photoCountSpan = document.getElementById('photoCount');
+    const maxPhotoSpan = document.getElementById('maxPhoto');
+    const selesaiBtn = document.getElementById('selesaiBtn');
+    const layoutSection = document.getElementById('layoutSection');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const loadingDiv = document.getElementById('loading');
+    
+    maxPhotoSpan.textContent = MAX_PHOTOS;
+    
+    async function startCamera() {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+        } catch (err) {
+            alert('Gagal akses kamera: ' + err.message + '\n\nPastikan izin kamera diberikan');
+        }
+    }
+    
+    function capturePhoto() {
+        if (photos.length >= MAX_PHOTOS) {
+            alert(`Maksimal ${MAX_PHOTOS} foto!`);
+            return;
         }
         
-        // Tab switching
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.onclick = () => {
-                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-                item.classList.add('active');
-                const tab = item.dataset.tab;
-                if (tab === 'data') {
-                    document.querySelector('.welcome-banner').style.display = 'none';
-                    document.querySelector('.action-cards').style.display = 'none';
-                } else {
-                    document.querySelector('.welcome-banner').style.display = 'block';
-                    document.querySelector('.action-cards').style.display = 'grid';
-                }
+        let count = 3;
+        countdownDiv.style.display = 'block';
+        countdownDiv.textContent = count;
+        
+        const interval = setInterval(() => {
+            count--;
+            countdownDiv.textContent = count;
+            if (count <= 0) {
+                clearInterval(interval);
+                countdownDiv.style.display = 'none';
+                
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                ctx.translate(canvas.width, 0);
+                ctx.scale(-1, 1);
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                
+                const photoUrl = canvas.toDataURL('image/png');
+                photos.push(photoUrl);
+                updateGallery();
+                
+                const flash = document.createElement('div');
+                flash.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:white;z-index:999;pointer-events:none';
+                document.body.appendChild(flash);
+                setTimeout(() => flash.remove(), 150);
+            }
+        }, 1000);
+    }
+    
+    function updateGallery() {
+        gallery.style.display = 'block';
+        photoCountSpan.textContent = photos.length;
+        
+        if (photos.length === 0) {
+            photoList.innerHTML = '<div style="color:#aaa">Belum ada foto</div>';
+            return;
+        }
+        
+        photoList.innerHTML = photos.map((photo, idx) => `
+            <div class="photo-item" data-idx="${idx}">
+                <img src="${photo}" alt="foto ${idx+1}">
+                <div class="delete-btn" onclick="window.deletePhoto(${idx})">✕</div>
+            </div>
+        `).join('');
+    }
+    
+    window.deletePhoto = function(idx) {
+        photos.splice(idx, 1);
+        updateGallery();
+    };
+    
+    selesaiBtn.onclick = () => {
+        if (photos.length === 0) {
+            alert('Ambil minimal 1 foto!');
+            return;
+        }
+        gallery.style.display = 'none';
+        layoutSection.style.display = 'block';
+    };
+    
+    document.querySelectorAll('.layout-card').forEach(el => {
+        el.onclick = () => {
+            document.querySelectorAll('.layout-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedLayout = el.dataset.layout;
+        };
+    });
+    document.querySelector('.layout-card').classList.add('selected');
+    
+    document.querySelectorAll('.frame-btn').forEach(el => {
+        el.onclick = () => {
+            document.querySelectorAll('.frame-btn').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedFrame = el.dataset.frame;
+        };
+    });
+    document.querySelector('.frame-btn').classList.add('selected');
+    
+    uploadBtn.onclick = async () => {
+        if (photos.length === 0) {
+            alert('Tidak ada foto untuk diupload!');
+            return;
+        }
+        
+        loadingDiv.style.display = 'flex';
+        
+        try {
+            const fotoUrls = [];
+            const timestamp = Date.now();
+            
+            for (let i = 0; i < photos.length; i++) {
+                const response = await fetch(photos[i]);
+                const blob = await response.blob();
+                const filename = `${sessionId}_${timestamp}_${i}.png`;
+                const { error } = await supabase.storage.from('foto').upload(filename, blob);
+                if (error) throw error;
+                const { data } = supabase.storage.from('foto').getPublicUrl(filename);
+                fotoUrls.push(data.publicUrl);
+            }
+            
+            const data = {
+                nama: "Siswa SMAM 4",
+                foto_urls: fotoUrls,
+                layout: selectedLayout,
+                frame: selectedFrame,
+                session_id: sessionId,
+                created_at: new Date().toISOString()
             };
-        });
-        
-        // Login dengan verifikasi yang aman
-        document.getElementById('loginBtn').onclick = async () => {
-            const pass = document.getElementById('adminPassword').value;
-            const isValid = await verifyPassword(pass);
             
-            if (isValid) {
-                sessionStorage.setItem('adminAuth', 'true');
-                document.getElementById('loginContainer').style.display = 'none';
-                document.getElementById('dashboardContainer').style.display = 'block';
-                loadData();
-            } else {
-                document.getElementById('loginError').innerText = 'Password salah!';
-            }
-        };
-        
-        // Cek apakah sudah login sebelumnya
-        if (savedAuth === 'true') {
-            document.getElementById('loginContainer').style.display = 'none';
-            document.getElementById('dashboardContainer').style.display = 'block';
-            loadData();
+            const { error } = await supabase.from('hasil_foto').insert([data]);
+            if (error) throw error;
+            
+            loadingDiv.style.display = 'none';
+            showQRResult();
+            
+        } catch (err) {
+            loadingDiv.style.display = 'none';
+            alert('Error: ' + err.message);
         }
-        
-        document.getElementById('logoutBtn').onclick = () => {
-            sessionStorage.removeItem('adminAuth');
-            document.getElementById('loginContainer').style.display = 'flex';
-            document.getElementById('dashboardContainer').style.display = 'none';
-            document.getElementById('adminPassword').value = '';
-        };
-        
-        async function loadData() {
-            const tbody = document.getElementById('dataList');
-            tbody.innerHTML = '<tr><td colspan="4" class="loading-state">⏳ Memuat data...</td></tr>';
-            
-            try {
-                const { data, error } = await supabase
-                    .from('hasil_foto')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-                
-                if (error) throw error;
-                
-                allData = data || [];
-                updateStats();
-                renderTable(allData);
-                
-            } catch (err) {
-                tbody.innerHTML = `<tr><td colspan="4" class="empty-state">❌ Error: ${err.message}</td></tr>`;
-            }
-        }
-        
-        function updateStats() {
-            const totalPhotos = allData.reduce((sum, item) => sum + (item.foto_urls?.length || 0), 0);
-            const uniqueCustomers = new Set(allData.map(item => item.nama)).size;
-            const totalGifs = allData.filter(item => item.gif_url).length;
-            
-            document.getElementById('totalData').innerText = allData.length;
-            document.getElementById('totalPhotos').innerText = totalPhotos;
-            document.getElementById('totalCustomers').innerText = uniqueCustomers;
-            document.getElementById('totalGifs').innerText = totalGifs;
-        }
-        
-        function renderTable(data) {
-            const tbody = document.getElementById('dataList');
-            
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="empty-state">📷 Belum ada data foto</td></tr>';
-                return;
-            }
-            
-            tbody.innerHTML = data.map(item => `
-                <tr>
-                    <td class="customer-name">${escapeHtml(item.nama)}</td>
-                    <td style="font-size:13px; color:#6c7a8a;">
-                        ${new Date(item.created_at).toLocaleDateString('id-ID')}<br>
-                        <small>${new Date(item.created_at).toLocaleTimeString('id-ID')}</small>
-                    </td>
-                    <td>
-                        <span class="photo-badge">📸 ${item.foto_urls?.length || 0} foto</span>
-                        ${item.gif_url ? '<span class="photo-badge gif-badge">🎬 GIF</span>' : ''}
-                    </td>
-                    <td>
-                        <button class="btn-detail" onclick="viewDetail('${item.id}')">Detail</button>
-                        <button class="btn-delete" onclick="deleteData('${item.id}', '${escapeHtml(item.nama)}')">Hapus</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-        
-        window.viewDetail = (id) => {
-            const item = allData.find(d => d.id == id);
-            if (!item) return;
-            
-            let fotoHtml = '';
-            if (item.foto_urls && item.foto_urls.length) {
-                fotoHtml = `
-                    <div class="modal-photo-grid">
-                        ${item.foto_urls.map(url => `<img src="${url}" alt="foto" loading="lazy">`).join('')}
+    };
+    
+    function showQRResult() {
+        document.body.innerHTML = `
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #1a2c3e 0%, #2c4a6e 100%); color: white; padding: 20px; text-align: center;">
+                <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 32px; padding: 40px; max-width: 500px;">
+                    <div style="font-size: 64px; margin-bottom: 20px;">✅</div>
+                    <h1 style="color: #10b981; margin-bottom: 16px;">UPLOAD BERHASIL!</h1>
+                    <p style="margin-bottom: 20px;">${photos.length} foto berhasil diupload</p>
+                    <canvas id="qrCanvas" style="margin-bottom: 20px; background: white; padding: 10px; border-radius: 16px;"></canvas>
+                    <p style="margin-bottom: 10px;">Scan QR untuk lihat hasil:</p>
+                    <p style="font-size: 12px; color: #aaa; word-break: break-all; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 12px;">${WEB_URL}/smamip.html?session=${sessionId}</p>
+                    <div style="margin-top: 30px; display: flex; gap: 15px; justify-content: center;">
+                        <button onclick="location.reload()" style="background: #7c3aed; color: white; border: none; padding: 12px 24px; border-radius: 30px; cursor: pointer;">📸 FOTO LAGI</button>
+                        <button onclick="window.location.href='${WEB_URL}/admin.html'" style="background: #2c4a6e; color: white; border: none; padding: 12px 24px; border-radius: 30px; cursor: pointer;">🔐 ADMIN</button>
                     </div>
-                `;
-            }
-            
-            let gifHtml = '';
-            if (item.gif_url) {
-                gifHtml = `<div class="modal-photo-grid"><img src="${item.gif_url}" alt="gif"></div>`;
-            }
-            
-            document.getElementById('modalTitle').innerHTML = `📸 ${escapeHtml(item.nama)}`;
-            document.getElementById('modalBody').innerHTML = `
-                <div class="info-row">
-                    <p><strong>📅 Tanggal:</strong> ${new Date(item.created_at).toLocaleString('id-ID')}</p>
-                    <p><strong>🖼️ Jumlah foto:</strong> ${item.foto_urls?.length || 0}</p>
-                    ${item.layout ? `<p><strong>📐 Layout:</strong> ${item.layout === '1strip' ? '1 Strip (Horizontal)' : '2 Strip (Grid 2x2)'}</p>` : ''}
-                    ${item.frame ? `<p><strong>🖼️ Bingkai:</strong> ${item.frame}</p>` : ''}
                 </div>
-                ${fotoHtml}
-                ${gifHtml}
-                <div style="margin-top: 20px; text-align: center;">
-                    <button onclick="closeModal()" style="padding: 10px 24px; background: #2c4a6e; color: white; border: none; border-radius: 10px; cursor: pointer;">Tutup</button>
-                </div>
-            `;
-            document.getElementById('modal').style.display = 'flex';
-        };
+            </div>
+        `;
         
-        window.closeModal = () => {
-            document.getElementById('modal').style.display = 'none';
-        };
-        
-        window.deleteData = async (id, nama) => {
-            if (!confirm(`⚠️ Yakin ingin menghapus data "${nama}"? Data tidak dapat dikembalikan.`)) return;
-            
-            try {
-                const { error } = await supabase.from('hasil_foto').delete().eq('id', id);
-                if (error) throw error;
-                alert(`✅ Data "${nama}" berhasil dihapus!`);
-                loadData();
-            } catch (err) {
-                alert(`❌ Gagal hapus: ${err.message}`);
-            }
-        };
-        
-        window.refreshData = () => {
-            loadData();
-        };
-        
-        document.getElementById('refreshBtn').onclick = () => {
-            document.getElementById('searchInput').value = '';
-            loadData();
-        };
-        
-        document.getElementById('searchInput').onkeyup = () => {
-            const keyword = document.getElementById('searchInput').value.toLowerCase();
-            if (!keyword) {
-                renderTable(allData);
-                return;
-            }
-            const filtered = allData.filter(item => item.nama.toLowerCase().includes(keyword));
-            renderTable(filtered);
-        };
-        
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, (m) => {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
-        }
-        
-        // Close modal on escape
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeModal();
+        const url = `${WEB_URL}/smamip.html?session=${sessionId}`;
+        QRCode.toCanvas(document.getElementById('qrCanvas'), url, { width: 250 }, (error) => {
+            if (error) console.error(error);
         });
-    })();
+    }
+    
+    startCamera();
+    captureBtn.onclick = capturePhoto;
+})();
 </script>
 </body>
 </html>
