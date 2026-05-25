@@ -3,29 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - FotoStudio</title>
+    <title>Dashboard Admin - School Photo Studio</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f8fafc;
-            padding: 24px;
-            color: #1e293b;
+            background: #f0f4f8;
+            color: #1a2c3e;
         }
-        
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-        }
-        
-        /* Login Card */
-        .login-wrapper {
+
+        /* Login Page */
+        .login-container {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a2c3e 0%, #2c4a6e 100%);
             position: fixed;
             top: 0;
             left: 0;
@@ -33,242 +31,372 @@
             bottom: 0;
             z-index: 1000;
         }
-        
-        .login-card {
+
+        .login-box {
             background: white;
-            border-radius: 32px;
+            border-radius: 24px;
             padding: 48px 40px;
             width: 100%;
-            max-width: 420px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            max-width: 400px;
+            box-shadow: 0 20px 35px -10px rgba(0,0,0,0.2);
             text-align: center;
         }
-        
-        .login-card h2 {
-            font-size: 28px;
+
+        .login-box .logo {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .login-box h2 {
+            font-size: 24px;
             font-weight: 700;
-            color: #1e293b;
+            color: #1a2c3e;
             margin-bottom: 8px;
         }
-        
-        .login-card p {
-            color: #64748b;
+
+        .login-box p {
+            color: #6c7a8a;
             font-size: 14px;
             margin-bottom: 32px;
         }
-        
-        .login-card input {
+
+        .login-box input {
             width: 100%;
             padding: 14px 18px;
             border: 1.5px solid #e2e8f0;
-            border-radius: 16px;
+            border-radius: 12px;
             font-size: 15px;
-            transition: all 0.2s;
             margin-bottom: 20px;
+            transition: all 0.2s;
         }
-        
-        .login-card input:focus {
+
+        .login-box input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+            border-color: #2c4a6e;
+            box-shadow: 0 0 0 3px rgba(44,74,110,0.1);
         }
-        
-        .login-card button {
+
+        .login-btn {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #2c4a6e;
             color: white;
             border: none;
-            border-radius: 16px;
+            border-radius: 12px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: background 0.2s;
         }
-        
-        .login-card button:hover { transform: translateY(-2px); }
-        
-        /* Header */
-        .dashboard-header {
+
+        .login-btn:hover {
+            background: #1a2c3e;
+        }
+
+        /* Dashboard Layout */
+        .dashboard-container {
+            display: none;
+        }
+
+        /* Top Navigation */
+        .top-nav {
             background: white;
-            border-radius: 24px;
-            padding: 24px 32px;
-            margin-bottom: 24px;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            border: 1px solid #e2e8f0;
+            padding: 16px 0;
         }
-        
-        .header-title h1 {
-            font-size: 24px;
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 28px;
+        }
+
+        .logo-text h3 {
+            font-size: 18px;
             font-weight: 700;
-            color: #1e293b;
+            color: #1a2c3e;
         }
-        
-        .header-title p {
-            color: #64748b;
+
+        .logo-text p {
+            font-size: 11px;
+            color: #6c7a8a;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-item {
+            padding: 8px 20px;
+            border-radius: 8px;
+            color: #6c7a8a;
             font-size: 14px;
-            margin-top: 4px;
-        }
-        
-        .logout-btn {
-            background: #f1f5f9;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 40px;
-            color: #64748b;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s;
         }
-        
-        .logout-btn:hover {
-            background: #fee2e2;
-            color: #ef4444;
+
+        .nav-item.active {
+            background: #e8f0fe;
+            color: #2c4a6e;
         }
-        
-        /* Stats Grid */
+
+        .nav-item:hover:not(.active) {
+            background: #f1f5f9;
+            color: #1a2c3e;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .admin-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1a2c3e;
+        }
+
+        .logout-nav {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .logout-nav:hover {
+            background: #fef2f2;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* Welcome Section */
+        .welcome-banner {
+            background: linear-gradient(135deg, #2c4a6e 0%, #1a2c3e 100%);
+            border-radius: 20px;
+            padding: 32px 40px;
+            margin-bottom: 32px;
+            color: white;
+        }
+
+        .welcome-banner h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .welcome-banner p {
+            opacity: 0.8;
+            font-size: 14px;
+        }
+
+        /* Stats Cards */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 20px;
-            margin-bottom: 24px;
+            margin-bottom: 32px;
         }
-        
+
         .stat-card {
             background: white;
             border-radius: 20px;
-            padding: 20px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             border: 1px solid #e2e8f0;
-            transition: all 0.2s;
         }
-        
-        .stat-card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            transform: translateY(-2px);
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
         }
-        
+
         .stat-icon {
             font-size: 32px;
-            margin-bottom: 12px;
         }
-        
-        .stat-number {
+
+        .stat-value {
             font-size: 32px;
             font-weight: 700;
-            color: #1e293b;
+            color: #1a2c3e;
+            margin-bottom: 4px;
         }
-        
+
         .stat-label {
-            color: #64748b;
             font-size: 14px;
-            margin-top: 4px;
+            color: #6c7a8a;
         }
-        
-        /* Filter Bar */
-        .filter-bar {
+
+        /* Action Cards */
+        .action-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .action-card {
             background: white;
             border-radius: 20px;
-            padding: 16px 20px;
-            margin-bottom: 24px;
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            flex-wrap: wrap;
+            padding: 24px;
+            text-align: center;
             border: 1px solid #e2e8f0;
-        }
-        
-        .filter-bar input {
-            flex: 1;
-            padding: 12px 16px;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 40px;
-            font-size: 14px;
-            min-width: 200px;
-        }
-        
-        .filter-bar input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        .btn-refresh {
-            background: #f1f5f9;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 40px;
-            color: #475569;
-            font-weight: 500;
-            cursor: pointer;
             transition: all 0.2s;
+            cursor: pointer;
         }
-        
-        .btn-refresh:hover {
-            background: #e2e8f0;
+
+        .action-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
         }
-        
+
+        .action-icon {
+            font-size: 40px;
+            margin-bottom: 16px;
+        }
+
+        .action-card h4 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #1a2c3e;
+        }
+
+        .action-card p {
+            font-size: 13px;
+            color: #6c7a8a;
+        }
+
         /* Data Table */
-        .data-table {
+        .data-card {
             background: white;
             border-radius: 20px;
             border: 1px solid #e2e8f0;
             overflow: hidden;
         }
-        
-        .table-header {
-            display: grid;
-            grid-template-columns: 2fr 1.5fr 1.5fr 1fr;
-            background: #f8fafc;
-            padding: 16px 20px;
+
+        .card-header {
+            padding: 20px 24px;
             border-bottom: 1px solid #e2e8f0;
-            font-weight: 600;
-            color: #475569;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .table-row {
-            display: grid;
-            grid-template-columns: 2fr 1.5fr 1.5fr 1fr;
-            padding: 16px 20px;
-            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .card-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .search-area {
+            display: flex;
+            gap: 12px;
+        }
+
+        .search-area input {
+            padding: 10px 16px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 30px;
+            width: 260px;
+            font-size: 14px;
+        }
+
+        .search-area input:focus {
+            outline: none;
+            border-color: #2c4a6e;
+        }
+
+        .refresh-btn {
+            background: #f1f5f9;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            color: #475569;
+            cursor: pointer;
+            font-weight: 500;
             transition: background 0.2s;
         }
-        
-        .table-row:hover {
-            background: #faf5ff;
+
+        .refresh-btn:hover {
+            background: #e2e8f0;
         }
-        
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 16px 20px;
+            background: #f8fafc;
+            font-weight: 600;
+            font-size: 13px;
+            color: #475569;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        td {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 14px;
+        }
+
         .customer-name {
             font-weight: 600;
-            color: #1e293b;
+            color: #1a2c3e;
         }
-        
-        .customer-date {
-            font-size: 13px;
-            color: #64748b;
-        }
-        
-        .photo-count {
+
+        .photo-badge {
             display: inline-block;
             background: #e0e7ff;
             color: #4338ca;
-            padding: 4px 10px;
-            border-radius: 30px;
+            padding: 4px 12px;
+            border-radius: 20px;
             font-size: 12px;
             font-weight: 500;
         }
-        
-        .action-buttons {
-            display: flex;
-            gap: 8px;
+
+        .gif-badge {
+            background: #fef3c7;
+            color: #d97706;
+            margin-left: 8px;
         }
-        
-        .btn-view-detail {
+
+        .btn-detail {
             background: none;
             border: none;
             color: #3b82f6;
@@ -276,14 +404,13 @@
             font-size: 13px;
             font-weight: 500;
             padding: 6px 12px;
-            border-radius: 8px;
-            transition: background 0.2s;
+            border-radius: 6px;
         }
-        
-        .btn-view-detail:hover {
+
+        .btn-detail:hover {
             background: #eff6ff;
         }
-        
+
         .btn-delete {
             background: none;
             border: none;
@@ -292,14 +419,26 @@
             font-size: 13px;
             font-weight: 500;
             padding: 6px 12px;
-            border-radius: 8px;
-            transition: background 0.2s;
+            border-radius: 6px;
+            margin-left: 8px;
         }
-        
+
         .btn-delete:hover {
             background: #fef2f2;
         }
-        
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+
         /* Modal */
         .modal {
             display: none;
@@ -309,35 +448,36 @@
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.8);
-            z-index: 1100;
+            z-index: 1000;
             align-items: center;
             justify-content: center;
         }
-        
+
         .modal-content {
             background: white;
             border-radius: 24px;
-            max-width: 600px;
+            max-width: 700px;
             width: 90%;
-            max-height: 80vh;
+            max-height: 85vh;
             overflow-y: auto;
-            padding: 28px;
         }
-        
+
         .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            background: white;
         }
-        
+
         .modal-header h3 {
             font-size: 20px;
             font-weight: 600;
         }
-        
+
         .modal-close {
             background: none;
             border: none;
@@ -345,104 +485,178 @@
             cursor: pointer;
             color: #94a3b8;
         }
-        
+
+        .modal-body {
+            padding: 24px;
+        }
+
         .modal-photo-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             gap: 16px;
-            margin: 16px 0;
+            margin: 20px 0;
         }
-        
+
         .modal-photo-grid img {
             width: 100%;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-        
-        .modal-info {
+
+        .info-row {
             background: #f8fafc;
             padding: 16px;
             border-radius: 12px;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
-        
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #94a3b8;
+
+        .info-row p {
+            margin-bottom: 8px;
         }
-        
-        .loading-state {
-            text-align: center;
-            padding: 40px;
-            color: #94a3b8;
+
+        @media (max-width: 1024px) {
+            .stats-grid, .action-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
-        
+
         @media (max-width: 768px) {
-            body { padding: 16px; }
-            .table-header, .table-row { grid-template-columns: 1fr; gap: 8px; }
-            .table-header { display: none; }
-            .table-row { padding: 16px; }
-            .action-buttons { justify-content: flex-start; margin-top: 8px; }
+            .stats-grid, .action-cards {
+                grid-template-columns: 1fr;
+            }
+            .search-area {
+                flex-direction: column;
+                width: 100%;
+            }
+            .search-area input {
+                width: 100%;
+            }
+            .nav-menu {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
 
-<!-- Login Modal -->
-<div id="loginWrapper" class="login-wrapper">
-    <div class="login-card">
-        <div style="font-size: 48px; margin-bottom: 16px;">🔐</div>
-        <h2>Admin Dashboard</h2>
-        <p>Masukkan kredensial untuk mengakses</p>
-        <input type="password" id="adminPassword" placeholder="Password">
-        <button id="loginBtn">Login</button>
+<!-- Login Page -->
+<div id="loginContainer" class="login-container">
+    <div class="login-box">
+        <div class="logo">📸</div>
+        <h2>School Photo Studio</h2>
+        <p>Admin Dashboard - Masuk untuk mengelola</p>
+        <input type="password" id="adminPassword" placeholder="Password Admin">
+        <button class="login-btn" id="loginBtn">Masuk ke Dashboard</button>
         <div id="loginError" style="color:#ef4444; margin-top:16px; font-size:14px;"></div>
     </div>
 </div>
 
 <!-- Dashboard -->
-<div id="dashboardContainer" style="display: none;">
-    <div class="container">
-        <div class="dashboard-header">
-            <div class="header-title">
-                <h1>📸 Admin Dashboard</h1>
-                <p>Kelola semua hasil foto pelanggan</p>
+<div id="dashboardContainer" class="dashboard-container">
+    <!-- Top Navigation -->
+    <div class="top-nav">
+        <div class="nav-content">
+            <div class="logo-area">
+                <div class="logo-icon">📸</div>
+                <div class="logo-text">
+                    <h3>School Photo Studio</h3>
+                    <p>Management System</p>
+                </div>
             </div>
-            <button class="logout-btn" id="logoutBtn">🚪 Keluar</button>
+            <div class="nav-menu">
+                <div class="nav-item active" data-tab="dashboard">Dashboard</div>
+                <div class="nav-item" data-tab="data">Data Foto</div>
+            </div>
+            <div class="user-info">
+                <span class="admin-name">Admin Sekolah</span>
+                <button class="logout-nav" id="logoutBtn">🚪 Keluar</button>
+            </div>
         </div>
-        
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Welcome Banner -->
+        <div class="welcome-banner">
+            <h1>Selamat datang, Admin</h1>
+            <p>Kelola semua hasil foto siswa dan kegiatan sekolah</p>
+        </div>
+
+        <!-- Stats Cards -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-icon">📸</div>
-                <div class="stat-number" id="totalData">0</div>
-                <div class="stat-label">Total Data</div>
+                <div class="stat-header">
+                    <span class="stat-icon">📸</span>
+                </div>
+                <div class="stat-value" id="totalData">0</div>
+                <div class="stat-label">Total Sesi Foto</div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon">🖼️</div>
-                <div class="stat-number" id="totalPhotos">0</div>
+                <div class="stat-header">
+                    <span class="stat-icon">🖼️</span>
+                </div>
+                <div class="stat-value" id="totalPhotos">0</div>
                 <div class="stat-label">Total Foto</div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon">👥</div>
-                <div class="stat-number" id="totalCustomers">0</div>
+                <div class="stat-header">
+                    <span class="stat-icon">👥</span>
+                </div>
+                <div class="stat-value" id="totalCustomers">0</div>
                 <div class="stat-label">Pelanggan</div>
             </div>
-        </div>
-        
-        <div class="filter-bar">
-            <input type="text" id="searchInput" placeholder="Cari berdasarkan nama pelanggan...">
-            <button class="btn-refresh" id="refreshBtn">🔄 Refresh</button>
-        </div>
-        
-        <div class="data-table">
-            <div class="table-header">
-                <div>Nama Pelanggan</div>
-                <div>Tanggal</div>
-                <div>Detail</div>
-                <div>Aksi</div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-icon">🎬</span>
+                </div>
+                <div class="stat-value" id="totalGifs">0</div>
+                <div class="stat-label">Total GIF</div>
             </div>
-            <div id="dataList"></div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="action-cards">
+            <div class="action-card" onclick="window.open('photobooth.html', '_blank')">
+                <div class="action-icon">📸</div>
+                <h4>Ambil Foto Baru</h4>
+                <p>Buka photobooth untuk mengambil foto baru</p>
+            </div>
+            <div class="action-card" onclick="refreshData()">
+                <div class="action-icon">🔄</div>
+                <h4>Refresh Data</h4>
+                <p>Perbarui tampilan data terbaru</p>
+            </div>
+            <div class="action-card">
+                <div class="action-icon">📊</div>
+                <h4>Laporan</h4>
+                <p>Lihat statistik lengkap</p>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="data-card">
+            <div class="card-header">
+                <h3>📋 Data Hasil Foto</h3>
+                <div class="search-area">
+                    <input type="text" id="searchInput" placeholder="Cari berdasarkan nama...">
+                    <button class="refresh-btn" id="refreshBtn">🔄 Refresh</button>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nama Pelanggan</th>
+                            <th>Tanggal & Waktu</th>
+                            <th>Detail</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataList">
+                        <tr><td colspan="4" class="loading-state">⏳ Memuat data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -454,7 +668,7 @@
             <h3 id="modalTitle">Detail Foto</h3>
             <button class="modal-close" onclick="closeModal()">&times;</button>
         </div>
-        <div id="modalBody"></div>
+        <div class="modal-body" id="modalBody"></div>
     </div>
 </div>
 
@@ -470,11 +684,27 @@
         
         supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
+        // Tab switching
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.onclick = () => {
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                const tab = item.dataset.tab;
+                if (tab === 'data') {
+                    document.querySelector('.welcome-banner').style.display = 'none';
+                    document.querySelector('.action-cards').style.display = 'none';
+                } else {
+                    document.querySelector('.welcome-banner').style.display = 'block';
+                    document.querySelector('.action-cards').style.display = 'grid';
+                }
+            };
+        });
+        
         // Login
         document.getElementById('loginBtn').onclick = () => {
             const pass = document.getElementById('adminPassword').value;
             if (pass === ADMIN_PASSWORD) {
-                document.getElementById('loginWrapper').style.display = 'none';
+                document.getElementById('loginContainer').style.display = 'none';
                 document.getElementById('dashboardContainer').style.display = 'block';
                 loadData();
             } else {
@@ -483,14 +713,14 @@
         };
         
         document.getElementById('logoutBtn').onclick = () => {
-            document.getElementById('loginWrapper').style.display = 'flex';
+            document.getElementById('loginContainer').style.display = 'flex';
             document.getElementById('dashboardContainer').style.display = 'none';
             document.getElementById('adminPassword').value = '';
         };
         
         async function loadData() {
-            const container = document.getElementById('dataList');
-            container.innerHTML = '<div class="loading-state">⏳ Memuat data...</div>';
+            const tbody = document.getElementById('dataList');
+            tbody.innerHTML = '<tr><td colspan="4" class="loading-state">⏳ Memuat data...</td></tr>';
             
             try {
                 const { data, error } = await supabase
@@ -502,40 +732,48 @@
                 
                 allData = data || [];
                 updateStats();
-                renderList(allData);
+                renderTable(allData);
                 
             } catch (err) {
-                container.innerHTML = `<div class="empty-state">❌ Error: ${err.message}</div>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="empty-state">❌ Error: ${err.message}</td></tr>`;
             }
         }
         
         function updateStats() {
             const totalPhotos = allData.reduce((sum, item) => sum + (item.foto_urls?.length || 0), 0);
             const uniqueCustomers = new Set(allData.map(item => item.nama)).size;
+            const totalGifs = allData.filter(item => item.gif_url).length;
             
             document.getElementById('totalData').innerText = allData.length;
             document.getElementById('totalPhotos').innerText = totalPhotos;
             document.getElementById('totalCustomers').innerText = uniqueCustomers;
+            document.getElementById('totalGifs').innerText = totalGifs;
         }
         
-        function renderList(data) {
-            const container = document.getElementById('dataList');
+        function renderTable(data) {
+            const tbody = document.getElementById('dataList');
             
             if (!data || data.length === 0) {
-                container.innerHTML = '<div class="empty-state">📷 Belum ada data foto</div>';
+                tbody.innerHTML = '<tr><td colspan="4" class="empty-state">📷 Belum ada data foto</td></tr>';
                 return;
             }
             
-            container.innerHTML = data.map(item => `
-                <div class="table-row">
-                    <div class="customer-name">${escapeHtml(item.nama)}</div>
-                    <div class="customer-date">${new Date(item.created_at).toLocaleDateString('id-ID')}<br><small>${new Date(item.created_at).toLocaleTimeString('id-ID')}</small></div>
-                    <div><span class="photo-count">📸 ${item.foto_urls?.length || 0} foto</span> ${item.gif_url ? '<span class="photo-count" style="background:#fef3c7;color:#d97706;">🎬 GIF</span>' : ''}</div>
-                    <div class="action-buttons">
-                        <button class="btn-view-detail" onclick="viewDetail('${item.id}')">Detail</button>
+            tbody.innerHTML = data.map(item => `
+                <tr>
+                    <td class="customer-name">${escapeHtml(item.nama)}</td>
+                    <td style="font-size:13px; color:#6c7a8a;">
+                        ${new Date(item.created_at).toLocaleDateString('id-ID')}<br>
+                        <small>${new Date(item.created_at).toLocaleTimeString('id-ID')}</small>
+                    </td>
+                    <td>
+                        <span class="photo-badge">📸 ${item.foto_urls?.length || 0} foto</span>
+                        ${item.gif_url ? '<span class="photo-badge gif-badge">🎬 GIF</span>' : ''}
+                    </td>
+                    <td>
+                        <button class="btn-detail" onclick="viewDetail('${item.id}')">Detail</button>
                         <button class="btn-delete" onclick="deleteData('${item.id}', '${escapeHtml(item.nama)}')">Hapus</button>
-                    </div>
-                </div>
+                    </td>
+                </tr>
             `).join('');
         }
         
@@ -559,16 +797,16 @@
             
             document.getElementById('modalTitle').innerHTML = `📸 ${escapeHtml(item.nama)}`;
             document.getElementById('modalBody').innerHTML = `
-                <div class="modal-info">
+                <div class="info-row">
                     <p><strong>📅 Tanggal:</strong> ${new Date(item.created_at).toLocaleString('id-ID')}</p>
                     <p><strong>🖼️ Jumlah foto:</strong> ${item.foto_urls?.length || 0}</p>
-                    ${item.layout ? `<p><strong>📐 Layout:</strong> ${item.layout}</p>` : ''}
+                    ${item.layout ? `<p><strong>📐 Layout:</strong> ${item.layout === '1strip' ? '1 Strip (Horizontal)' : '2 Strip (Grid 2x2)'}</p>` : ''}
                     ${item.frame ? `<p><strong>🖼️ Bingkai:</strong> ${item.frame}</p>` : ''}
                 </div>
                 ${fotoHtml}
                 ${gifHtml}
                 <div style="margin-top: 20px; text-align: center;">
-                    <button onclick="closeModal()" style="padding: 10px 24px; background: #1e293b; color: white; border: none; border-radius: 12px; cursor: pointer;">Tutup</button>
+                    <button onclick="closeModal()" style="padding: 10px 24px; background: #2c4a6e; color: white; border: none; border-radius: 10px; cursor: pointer;">Tutup</button>
                 </div>
             `;
             document.getElementById('modal').style.display = 'flex';
@@ -579,7 +817,7 @@
         };
         
         window.deleteData = async (id, nama) => {
-            if (!confirm(`⚠️ Yakin ingin menghapus semua foto milik "${nama}"?`)) return;
+            if (!confirm(`⚠️ Yakin ingin menghapus data "${nama}"? Data tidak dapat dikembalikan.`)) return;
             
             try {
                 const { error } = await supabase.from('hasil_foto').delete().eq('id', id);
@@ -591,6 +829,10 @@
             }
         };
         
+        window.refreshData = () => {
+            loadData();
+        };
+        
         document.getElementById('refreshBtn').onclick = () => {
             document.getElementById('searchInput').value = '';
             loadData();
@@ -599,11 +841,11 @@
         document.getElementById('searchInput').onkeyup = () => {
             const keyword = document.getElementById('searchInput').value.toLowerCase();
             if (!keyword) {
-                renderList(allData);
+                renderTable(allData);
                 return;
             }
             const filtered = allData.filter(item => item.nama.toLowerCase().includes(keyword));
-            renderList(filtered);
+            renderTable(filtered);
         };
         
         function escapeHtml(str) {
