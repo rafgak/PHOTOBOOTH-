@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>SMAM 4 Surabaya - Photo Booth</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0,1" />
@@ -23,24 +23,26 @@
         /* Header sekolah */
         .school-header {
             background: #0b3b2f;
-            padding: 16px 24px;
+            padding: 12px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 50;
         }
 
         .school-logo {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
         }
 
         .logo-icon {
-            width: 48px;
-            height: 48px;
+            width: 44px;
+            height: 44px;
             background: #f5a623;
             border-radius: 50%;
             display: flex;
@@ -49,32 +51,31 @@
         }
 
         .logo-icon span {
-            font-size: 28px;
+            font-size: 26px;
             color: #0b3b2f;
         }
 
         .school-name h2 {
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 700;
             color: white;
-            margin-bottom: 2px;
         }
 
         .school-name p {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: #cbd5e1;
         }
 
         .school-badge {
             background: #f5a623;
-            padding: 6px 16px;
+            padding: 5px 12px;
             border-radius: 40px;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 600;
             color: #0b3b2f;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
         }
 
         .school-badge span {
@@ -83,17 +84,17 @@
 
         /* Container utama */
         .container {
-            max-width: 1100px;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 24px;
+            padding: 16px;
         }
 
         /* Card kamera */
         .camera-card {
             background: #f8f9fc;
-            border-radius: 28px;
-            padding: 16px;
-            margin-bottom: 24px;
+            border-radius: 24px;
+            padding: 12px;
+            margin-bottom: 20px;
             box-shadow: 0 2px 12px rgba(0,0,0,0.04);
             border: 1px solid #eef2f6;
         }
@@ -103,7 +104,8 @@
             background: #1a1a1a;
             border-radius: 20px;
             overflow: hidden;
-            aspect-ratio: 4/3;
+            aspect-ratio: 4 / 3;
+            width: 100%;
         }
 
         video {
@@ -111,11 +113,12 @@
             height: 100%;
             object-fit: cover;
             transform: scaleX(-1);
+            display: block;
         }
 
         .camera-overlay {
             position: absolute;
-            bottom: 20px;
+            bottom: 16px;
             left: 0;
             right: 0;
             text-align: center;
@@ -125,9 +128,9 @@
             background: #f5a623;
             color: #0b3b2f;
             border: none;
-            padding: 14px 32px;
+            padding: 12px 24px;
             border-radius: 60px;
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
@@ -138,12 +141,11 @@
         }
 
         .capture-btn span {
-            font-size: 22px;
+            font-size: 20px;
         }
 
-        .capture-btn:hover {
-            transform: scale(1.02);
-            background: #ffb43b;
+        .capture-btn:active {
+            transform: scale(0.96);
         }
 
         /* Countdown */
@@ -152,56 +154,55 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 5rem;
+            font-size: 4rem;
             font-weight: 800;
             color: #f5a623;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
             z-index: 100;
             display: none;
             background: rgba(255,255,255,0.95);
-            padding: 30px 50px;
-            border-radius: 80px;
+            padding: 20px 40px;
+            border-radius: 60px;
             font-family: monospace;
+            white-space: nowrap;
         }
 
         /* Galeri foto */
         .gallery-card {
             background: white;
             border-radius: 24px;
-            padding: 20px;
-            margin-bottom: 24px;
+            padding: 16px;
+            margin-bottom: 20px;
             border: 1px solid #eef2f6;
         }
 
         .gallery-card h3 {
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 600;
             color: #0b3b2f;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .gallery-card h3 span {
-            font-size: 22px;
+            font-size: 20px;
         }
 
         .photo-list {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
         .photo-item {
             position: relative;
-            width: 90px;
-            height: 90px;
+            width: 80px;
+            height: 80px;
             background: #f1f5f9;
             border-radius: 16px;
             overflow: hidden;
             border: 2px solid #e2e8f0;
-            transition: all 0.2s;
         }
 
         .photo-item img {
@@ -233,16 +234,15 @@
         .option-section {
             background: #f8f9fc;
             border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
         }
 
         .option-title {
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: #64748b;
-            margin-bottom: 12px;
-            letter-spacing: 0.5px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 6px;
@@ -254,20 +254,19 @@
 
         .layout-options {
             display: flex;
-            gap: 16px;
+            gap: 12px;
             flex-wrap: wrap;
         }
 
         .layout-card {
             background: white;
-            border-radius: 20px;
-            padding: 12px 20px;
+            border-radius: 18px;
+            padding: 10px 16px;
             cursor: pointer;
             text-align: center;
             border: 1.5px solid #e2e8f0;
-            transition: all 0.2s;
             flex: 1;
-            min-width: 120px;
+            min-width: 100px;
         }
 
         .layout-card.selected {
@@ -277,47 +276,45 @@
 
         .layout-name {
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 5px;
         }
 
         .layout-name span {
-            font-size: 18px;
+            font-size: 16px;
         }
 
         .layout-preview {
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             color: #94a3b8;
-            margin-top: 6px;
-            font-family: monospace;
+            margin-top: 4px;
         }
 
         .frame-options {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
         .frame-btn {
             background: white;
             border: 1.5px solid #e2e8f0;
-            padding: 8px 20px;
+            padding: 7px 16px;
             border-radius: 40px;
             color: #334155;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 500;
-            transition: all 0.2s;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
         }
 
         .frame-btn span {
-            font-size: 18px;
+            font-size: 16px;
         }
 
         .frame-btn.selected {
@@ -329,49 +326,30 @@
         /* Tombol aksi */
         .action-buttons {
             display: flex;
-            gap: 16px;
-            margin-top: 24px;
+            gap: 12px;
+            margin-top: 20px;
         }
 
         .btn-primary {
             background: #f5a623;
             color: #0b3b2f;
             border: none;
-            padding: 12px 28px;
+            padding: 10px 24px;
             border-radius: 40px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .btn-primary span {
-            font-size: 20px;
+            font-size: 18px;
         }
 
-        .btn-primary:hover {
-            background: #ffb43b;
-        }
-
-        .btn-outline {
-            background: white;
-            border: 1.5px solid #e2e8f0;
-            color: #334155;
-            padding: 12px 28px;
-            border-radius: 40px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-outline span {
-            font-size: 20px;
+        .btn-primary:active {
+            transform: scale(0.96);
         }
 
         /* Loading */
@@ -381,7 +359,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(255,255,255,0.95);
+            background: rgba(255,255,255,0.96);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -391,13 +369,13 @@
         }
 
         .loading-spinner {
-            width: 48px;
-            height: 48px;
+            width: 42px;
+            height: 42px;
             border: 3px solid #e2e8f0;
             border-top-color: #f5a623;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         @keyframes spin {
@@ -405,25 +383,41 @@
         }
 
         /* QR Result */
-        .qr-result {
-            text-align: center;
-            padding: 30px 20px;
-        }
-
-        .qr-result h2 {
-            color: #0b3b2f;
-            margin-bottom: 12px;
-        }
-
-        .qr-container {
-            background: white;
+        .qr-result-page {
+            min-height: 100vh;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             padding: 20px;
-            border-radius: 24px;
-            display: inline-block;
-            margin: 20px 0;
         }
 
-        .link-text {
+        .qr-card {
+            max-width: 420px;
+            width: 100%;
+            background: #f8f9fc;
+            border-radius: 32px;
+            padding: 32px 20px;
+            text-align: center;
+        }
+
+        .success-icon {
+            background: #0b3b2f;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .success-icon span {
+            font-size: 36px;
+            color: #f5a623;
+        }
+
+        .qr-link {
             font-size: 0.7rem;
             color: #64748b;
             word-break: break-all;
@@ -438,12 +432,14 @@
             gap: 12px;
             justify-content: center;
             margin-top: 20px;
+            flex-wrap: wrap;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 500px) {
             .container { padding: 12px; }
             .photo-item { width: 70px; height: 70px; }
-            .layout-card { min-width: 100px; padding: 10px 12px; }
+            .layout-card { min-width: 85px; padding: 8px 12px; }
+            .capture-btn { padding: 10px 20px; font-size: 0.8rem; }
         }
     </style>
 </head>
@@ -466,11 +462,11 @@
     </div>
 </div>
 
-<div class="container">
+<div class="container" id="appContainer">
     <!-- Kamera -->
     <div class="camera-card">
         <div class="camera-container">
-            <video id="video" autoplay playsinline></video>
+            <video id="video" autoplay playsinline muted></video>
             <div class="camera-overlay">
                 <button class="capture-btn" id="captureBtn">
                     <span class="material-symbols-outlined">photo_camera</span>
@@ -587,15 +583,39 @@
     const layoutSection = document.getElementById('layoutSection');
     const uploadBtn = document.getElementById('uploadBtn');
     const loadingDiv = document.getElementById('loading');
+    const appContainer = document.getElementById('appContainer');
     
     maxPhotoSpan.textContent = MAX_PHOTOS;
     
+    // Resize video stream sesuai device
     async function startCamera() {
         try {
-            stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            // Dapatkan ukuran terbaik untuk device
+            const constraints = {
+                video: {
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 },
+                    facingMode: 'user'
+                }
+            };
+            
+            stream = await navigator.mediaDevices.getUserMedia(constraints);
             video.srcObject = stream;
+            
+            // Pastikan video container menyesuaikan
+            video.onloadedmetadata = () => {
+                const container = video.parentElement;
+                const aspect = video.videoHeight / video.videoWidth;
+                container.style.aspectRatio = `${video.videoWidth} / ${video.videoHeight}`;
+            };
         } catch (err) {
-            alert('Tidak dapat mengakses kamera. Pastikan izin diberikan.');
+            // Fallback ke constraint default
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+            } catch (e) {
+                alert('Tidak dapat mengakses kamera. Pastikan izin diberikan.');
+            }
         }
     }
     
@@ -617,9 +637,13 @@
                 countdownDiv.style.display = 'none';
                 
                 const canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
+                const videoWidth = video.videoWidth;
+                const videoHeight = video.videoHeight;
+                canvas.width = videoWidth;
+                canvas.height = videoHeight;
                 const ctx = canvas.getContext('2d');
+                
+                // Gambar dengan mirror agar natural
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                 ctx.translate(canvas.width, 0);
                 ctx.scale(-1, 1);
@@ -630,8 +654,9 @@
                 photos.push(photoUrl);
                 updateGallery();
                 
+                // Flash
                 const flash = document.createElement('div');
-                flash.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:white;z-index:999;pointer-events:none';
+                flash.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:white;z-index:999;pointer-events:none;opacity:0.9';
                 document.body.appendChild(flash);
                 setTimeout(() => flash.remove(), 150);
             }
@@ -735,32 +760,30 @@
         const url = `${WEB_URL}/index.html?session=${sessionId}`;
         
         document.body.innerHTML = `
-            <div style="min-height: 100vh; background: #ffffff; display: flex; align-items: center; justify-content: center; padding: 20px;">
-                <div style="max-width: 450px; width: 100%; text-align: center;">
-                    <div style="background: #f8f9fc; border-radius: 32px; padding: 40px 24px;">
-                        <div style="background: #0b3b2f; width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
-                            <span class="material-symbols-outlined" style="font-size: 36px; color: #f5a623;">check</span>
-                        </div>
-                        <h2 style="color: #0b3b2f; margin-bottom: 8px;">Upload Berhasil!</h2>
-                        <p style="color: #64748b; margin-bottom: 24px;">${photos.length} foto telah diupload</p>
-                        
-                        <div style="background: white; border-radius: 20px; padding: 16px; margin-bottom: 20px;">
-                            <canvas id="qrCanvas" style="width: 180px; height: 180px; margin: 0 auto;"></canvas>
-                        </div>
-                        
-                        <p style="font-size: 13px; color: #475569; margin-bottom: 8px;">Scan QR untuk lihat hasil</p>
-                        <div class="link-text" style="font-size: 10px;">${url}</div>
-                        
-                        <div class="btn-group">
-                            <button onclick="location.reload()" style="background: #f5a623; border: none; padding: 12px 24px; border-radius: 40px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-                                <span class="material-symbols-outlined" style="font-size: 18px;">photo_camera</span>
-                                Ambil Lagi
-                            </button>
-                            <button onclick="window.location.href='admin.html'" style="background: white; border: 1px solid #e2e8f0; padding: 12px 24px; border-radius: 40px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-                                <span class="material-symbols-outlined" style="font-size: 18px;">admin_panel_settings</span>
-                                Admin
-                            </button>
-                        </div>
+            <div class="qr-result-page">
+                <div class="qr-card">
+                    <div class="success-icon">
+                        <span class="material-symbols-outlined">check</span>
+                    </div>
+                    <h2 style="color: #0b3b2f; margin-bottom: 8px;">Upload Berhasil!</h2>
+                    <p style="color: #64748b; margin-bottom: 24px;">${photos.length} foto telah diupload</p>
+                    
+                    <div style="background: white; border-radius: 20px; padding: 16px; margin-bottom: 20px;">
+                        <canvas id="qrCanvas" style="width: 180px; height: 180px; margin: 0 auto;"></canvas>
+                    </div>
+                    
+                    <p style="font-size: 13px; color: #475569; margin-bottom: 8px;">Scan QR untuk lihat hasil</p>
+                    <div class="qr-link">${url}</div>
+                    
+                    <div class="btn-group">
+                        <button onclick="location.reload()" style="background: #f5a623; border: none; padding: 10px 20px; border-radius: 40px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                            <span class="material-symbols-outlined" style="font-size: 18px;">photo_camera</span>
+                            Ambil Lagi
+                        </button>
+                        <button onclick="window.location.href='admin.html'" style="background: white; border: 1px solid #e2e8f0; padding: 10px 20px; border-radius: 40px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                            <span class="material-symbols-outlined" style="font-size: 18px;">admin_panel_settings</span>
+                            Admin
+                        </button>
                     </div>
                 </div>
             </div>
