@@ -8,11 +8,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0,1" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #f3f6fc;
-            color: #1e293b;
-        }
+        body { font-family: 'Inter', sans-serif; background: #f3f6fc; color: #1e293b; }
         .login-container {
             min-height: 100vh;
             display: flex;
@@ -20,10 +16,7 @@
             justify-content: center;
             background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             z-index: 1000;
         }
         .login-box {
@@ -50,7 +43,7 @@
         .logo-text h3 { font-size: 18px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #334155); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .logo-text p { font-size: 11px; color: #94a3b8; }
         .nav-menu { display: flex; gap: 8px; }
-        .nav-item { padding: 8px 24px; border-radius: 40px; color: #64748b; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+        .nav-item { padding: 8px 24px; border-radius: 40px; color: #64748b; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; }
         .nav-item span { font-size: 18px; }
         .nav-item.active { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; box-shadow: 0 4px 12px rgba(99,102,241,0.25); }
         .nav-item:hover:not(.active) { background: #f1f5f9; color: #334155; }
@@ -66,66 +59,81 @@
         .welcome-banner h1 span { font-size: 36px; }
         .welcome-banner p { opacity: 0.8; font-size: 14px; }
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 32px; }
-        .stat-card { background: white; border-radius: 28px; padding: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid rgba(226,232,240,0.8); transition: all 0.25s ease; }
-        .stat-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px -12px rgba(0,0,0,0.12); border-color: #e2e8f0; }
-        .stat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .stat-card { background: white; border-radius: 28px; padding: 24px; border: 1px solid rgba(226,232,240,0.8); transition: all 0.25s ease; }
+        .stat-card:hover { transform: translateY(-4px); }
         .stat-icon span { font-size: 40px; background: linear-gradient(135deg, #6366f1, #8b5cf6); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .stat-value { font-size: 34px; font-weight: 800; color: #0f172a; margin-bottom: 6px; }
         .stat-label { font-size: 13px; color: #64748b; font-weight: 500; }
         .action-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 32px; }
         .action-card { background: white; border-radius: 28px; padding: 28px 24px; text-align: center; border: 1px solid rgba(226,232,240,0.8); cursor: pointer; transition: all 0.25s ease; }
-        .action-card:hover { transform: translateY(-5px); box-shadow: 0 20px 30px -12px rgba(99,102,241,0.15); border-color: #c7d2fe; }
+        .action-card:hover { transform: translateY(-5px); }
         .action-icon span { font-size: 48px; background: linear-gradient(135deg, #6366f1, #8b5cf6); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 16px; display: inline-block; }
         .action-card h4 { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: #1e293b; }
         .action-card p { font-size: 13px; color: #64748b; }
-        .data-card { background: white; border-radius: 28px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+        .data-card { background: white; border-radius: 28px; border: 1px solid #e2e8f0; overflow: hidden; }
         .card-header { padding: 24px 28px; border-bottom: 1px solid #eef2ff; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
-        .card-header h3 { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px; color: #1e293b; }
+        .card-header h3 { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
         .card-header h3 span { font-size: 24px; color: #8b5cf6; }
         .search-area { display: flex; gap: 12px; }
-        .search-area input { padding: 10px 18px; border: 1.5px solid #e2e8f0; border-radius: 40px; width: 280px; font-size: 14px; background: #f8fafc; transition: all 0.2s; }
-        .search-area input:focus { outline: none; border-color: #8b5cf6; background: white; box-shadow: 0 0 0 3px rgba(139,92,246,0.08); }
-        .refresh-btn { background: #f1f5f9; border: none; padding: 10px 24px; border-radius: 40px; color: #475569; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-        .refresh-btn span { font-size: 18px; }
-        .refresh-btn:hover { background: #e2e8f0; color: #1e293b; }
+        .search-area input { padding: 10px 18px; border: 1.5px solid #e2e8f0; border-radius: 40px; width: 280px; font-size: 14px; background: #f8fafc; }
+        .search-area input:focus { outline: none; border-color: #8b5cf6; background: white; }
+        .refresh-btn { background: #f1f5f9; border: none; padding: 10px 24px; border-radius: 40px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .refresh-btn:hover { background: #e2e8f0; }
         .table-wrapper { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 18px 24px; background: #fafcff; font-weight: 600; font-size: 13px; color: #475569; border-bottom: 1px solid #eef2ff; }
-        td { padding: 18px 24px; border-bottom: 1px solid #f1f5f9; font-size: 14px; vertical-align: middle; }
-        .customer-name { font-weight: 600; color: #1e293b; display: flex; align-items: center; gap: 10px; }
+        th { text-align: left; padding: 18px 24px; background: #fafcff; font-weight: 600; font-size: 13px; border-bottom: 1px solid #eef2ff; }
+        td { padding: 18px 24px; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+        .customer-name { font-weight: 600; display: flex; align-items: center; gap: 10px; }
         .customer-name span { font-size: 22px; color: #8b5cf6; }
-        .photo-badge { display: inline-flex; align-items: center; gap: 6px; background: #eef2ff; color: #4338ca; padding: 5px 14px; border-radius: 30px; font-size: 12px; font-weight: 500; }
-        .photo-badge span { font-size: 16px; }
+        .photo-badge { display: inline-flex; align-items: center; gap: 6px; background: #eef2ff; color: #4338ca; padding: 5px 14px; border-radius: 30px; font-size: 12px; }
         .gif-badge { background: #fef3c7; color: #d97706; margin-left: 8px; }
-        .btn-detail { background: none; border: none; color: #6366f1; cursor: pointer; font-weight: 500; padding: 6px 14px; border-radius: 30px; display: inline-flex; align-items: center; gap: 6px; }
-        .btn-detail span { font-size: 16px; }
+        .btn-detail { background: none; border: none; color: #6366f1; cursor: pointer; padding: 6px 14px; border-radius: 30px; display: inline-flex; align-items: center; gap: 6px; }
         .btn-detail:hover { background: #eef2ff; }
-        .btn-delete { background: none; border: none; color: #ef4444; cursor: pointer; font-weight: 500; padding: 6px 14px; border-radius: 30px; display: inline-flex; align-items: center; gap: 6px; margin-left: 6px; }
-        .btn-delete span { font-size: 16px; }
+        .btn-delete { background: none; border: none; color: #ef4444; cursor: pointer; padding: 6px 14px; border-radius: 30px; display: inline-flex; align-items: center; gap: 6px; margin-left: 6px; }
         .btn-delete:hover { background: #fef2f2; }
-        .empty-state { text-align: center; padding: 60px 20px; color: #94a3b8; }
-        .loading-state { text-align: center; padding: 50px; color: #94a3b8; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.85); backdrop-filter: blur(6px); z-index: 1100; align-items: center; justify-content: center; }
-        .modal-content { background: white; border-radius: 36px; max-width: 700px; width: 90%; max-height: 85vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
-        .modal-header { padding: 24px 28px; border-bottom: 1px solid #eef2ff; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: white; border-radius: 36px 36px 0 0; }
-        .modal-header h3 { font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-        .modal-header h3 span { font-size: 28px; color: #8b5cf6; }
-        .modal-close { background: none; border: none; font-size: 28px; cursor: pointer; color: #94a3b8; }
-        .modal-close:hover { color: #ef4444; }
+        .empty-state, .loading-state { text-align: center; padding: 40px; color: #94a3b8; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(15,23,42,0.85);
+            backdrop-filter: blur(6px);
+            z-index: 1100;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 36px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            padding: 24px 28px;
+            border-bottom: 1px solid #eef2ff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: white;
+        }
+        .modal-close { background: none; border: none; font-size: 28px; cursor: pointer; }
         .modal-body { padding: 28px; }
         .modal-photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; margin: 20px 0; }
-        .modal-photo-grid img { width: 100%; border-radius: 20px; box-shadow: 0 8px 20px -8px rgba(0,0,0,0.15); }
+        .modal-photo-grid img { width: 100%; border-radius: 20px; }
         .info-row { background: #f8fafc; padding: 20px; border-radius: 24px; margin-bottom: 20px; }
         .info-row p { margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
         .info-row p span { font-size: 20px; color: #6366f1; }
-        @media (max-width: 1024px) { .stats-grid, .action-cards { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 768px) {
             .stats-grid, .action-cards { grid-template-columns: 1fr; }
             .search-area { flex-direction: column; width: 100%; }
             .search-area input { width: 100%; }
             .nav-menu { display: none; }
             .main-content { padding: 20px; }
-            .welcome-banner { padding: 28px 24px; }
         }
     </style>
 </head>
@@ -145,54 +153,34 @@
 <div id="dashboardContainer" class="dashboard-container">
     <div class="top-nav">
         <div class="nav-content">
-            <div class="logo-area">
-                <div class="logo-icon"><span class="material-symbols-outlined">auto_awesome</span></div>
-                <div class="logo-text"><h3>School Photo Studio</h3><p>Management System</p></div>
-            </div>
+            <div class="logo-area"><div class="logo-icon"><span class="material-symbols-outlined">auto_awesome</span></div><div class="logo-text"><h3>School Photo Studio</h3><p>Management System</p></div></div>
             <div class="nav-menu">
                 <div class="nav-item active" data-tab="dashboard"><span class="material-symbols-outlined">dashboard</span> Dashboard</div>
                 <div class="nav-item" data-tab="data"><span class="material-symbols-outlined">folder</span> Data Foto</div>
             </div>
-            <div class="user-info">
-                <span class="admin-name">Admin Sekolah</span>
-                <button class="logout-nav" id="logoutBtn"><span class="material-symbols-outlined">logout</span> Keluar</button>
-            </div>
+            <div class="user-info"><span class="admin-name">Admin Sekolah</span><button class="logout-nav" id="logoutBtn"><span class="material-symbols-outlined">logout</span> Keluar</button></div>
         </div>
     </div>
 
     <div class="main-content">
-        <div class="welcome-banner">
-            <h1><span class="material-symbols-outlined">celebration</span> Selamat datang, Admin</h1>
-            <p>Kelola semua hasil foto siswa dan kegiatan sekolah dalam satu tempat</p>
-        </div>
+        <div class="welcome-banner"><h1><span class="material-symbols-outlined">celebration</span> Selamat datang, Admin</h1><p>Kelola semua hasil foto siswa dan kegiatan sekolah</p></div>
 
         <div class="stats-grid">
-            <div class="stat-card"><div class="stat-header"><div class="stat-icon"><span class="material-symbols-outlined">collections</span></div></div><div class="stat-value" id="totalData">0</div><div class="stat-label">Total Sesi Foto</div></div>
-            <div class="stat-card"><div class="stat-header"><div class="stat-icon"><span class="material-symbols-outlined">image</span></div></div><div class="stat-value" id="totalPhotos">0</div><div class="stat-label">Total Foto</div></div>
-            <div class="stat-card"><div class="stat-header"><div class="stat-icon"><span class="material-symbols-outlined">groups</span></div></div><div class="stat-value" id="totalCustomers">0</div><div class="stat-label">Pelanggan</div></div>
-            <div class="stat-card"><div class="stat-header"><div class="stat-icon"><span class="material-symbols-outlined">gif_box</span></div></div><div class="stat-value" id="totalGifs">0</div><div class="stat-label">Total GIF</div></div>
+            <div class="stat-card"><div class="stat-icon"><span class="material-symbols-outlined">collections</span></div><div class="stat-value" id="totalData">0</div><div class="stat-label">Total Sesi Foto</div></div>
+            <div class="stat-card"><div class="stat-icon"><span class="material-symbols-outlined">image</span></div><div class="stat-value" id="totalPhotos">0</div><div class="stat-label">Total Foto</div></div>
+            <div class="stat-card"><div class="stat-icon"><span class="material-symbols-outlined">groups</span></div><div class="stat-value" id="totalCustomers">0</div><div class="stat-label">Pelanggan</div></div>
+            <div class="stat-card"><div class="stat-icon"><span class="material-symbols-outlined">gif_box</span></div><div class="stat-value" id="totalGifs">0</div><div class="stat-label">Total GIF</div></div>
         </div>
 
         <div class="action-cards">
-            <div class="action-card" onclick="window.open('smamip.html', '_blank')"><div class="action-icon"><span class="material-symbols-outlined">add_a_photo</span></div><h4>Ambil Foto Baru</h4><p>Buka photobooth untuk mengambil foto baru</p></div>
-            <div class="action-card" onclick="refreshData()"><div class="action-icon"><span class="material-symbols-outlined">sync</span></div><h4>Refresh Data</h4><p>Perbarui tampilan data terbaru</p></div>
-            <div class="action-card"><div class="action-icon"><span class="material-symbols-outlined">analytics</span></div><h4>Laporan</h4><p>Lihat statistik lengkap</p></div>
+            <div class="action-card" onclick="window.open('smamip.html', '_blank')"><div class="action-icon"><span class="material-symbols-outlined">add_a_photo</span></div><h4>Ambil Foto Baru</h4><p>Buka photobooth</p></div>
+            <div class="action-card" onclick="refreshData()"><div class="action-icon"><span class="material-symbols-outlined">sync</span></div><h4>Refresh Data</h4><p>Perbarui data</p></div>
+            <div class="action-card"><div class="action-icon"><span class="material-symbols-outlined">analytics</span></div><h4>Laporan</h4><p>Statistik lengkap</p></div>
         </div>
 
         <div class="data-card">
-            <div class="card-header">
-                <h3><span class="material-symbols-outlined">photo_library</span> Data Hasil Foto</h3>
-                <div class="search-area">
-                    <input type="text" id="searchInput" placeholder="Cari berdasarkan nama...">
-                    <button class="refresh-btn" id="refreshBtn"><span class="material-symbols-outlined">refresh</span> Refresh</button>
-                </div>
-            </div>
-            <div class="table-wrapper">
-                <table>
-                    <thead><tr><th>Nama Pelanggan</th><th>Tanggal & Waktu</th><th>Detail</th><th>Aksi</th></tr></thead>
-                    <tbody id="dataList"><tr><td colspan="4" class="loading-state">⏳ Memuat data...</td></tr></tbody>
-                </table>
-            </div>
+            <div class="card-header"><h3><span class="material-symbols-outlined">photo_library</span> Data Hasil Foto</h3><div class="search-area"><input type="text" id="searchInput" placeholder="Cari berdasarkan nama..."><button class="refresh-btn" id="refreshBtn"><span class="material-symbols-outlined">refresh</span> Refresh</button></div></div>
+            <div class="table-wrapper"><table><thead><tr><th>Nama Pelanggan</th><th>Tanggal & Waktu</th><th>Detail</th><th>Aksi</th></tr></thead><tbody id="dataList"><tr><td colspan="4" class="loading-state">⏳ Memuat data...</td></tr></tbody></table></div>
         </div>
     </div>
 </div>
@@ -206,168 +194,151 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    (function() {
-        const SUPABASE_URL = "https://fhuulpwvoyubgmnooqrf.supabase.co";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZodXVscHd2b3l1Ymdtbm9vcXJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NDIzMzQsImV4cCI6MjA5NTExODMzNH0.Dm8inSoHfc1ICBcT1TVLSJWiVZ6rqdifZUtWCLAFTNw";
-        
-        let supabase = null;
-        let allData = [];
-        
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        
-        async function verifyPassword(password) {
-            try {
-                const encoder = new TextEncoder();
-                const data = encoder.encode(password);
-                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-                const hashArray = Array.from(new Uint8Array(hashBuffer));
-                const hashedPassword = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-                const { data: adminData, error } = await supabase.from('admin_config').select('password_hash').eq('password_hash', hashedPassword);
-                if (error) throw error;
-                return adminData && adminData.length > 0;
-            } catch (err) { return false; }
-        }
-        
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.onclick = () => {
-                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-                item.classList.add('active');
-                const tab = item.dataset.tab;
-                if (tab === 'data') {
-                    document.querySelector('.welcome-banner').style.display = 'none';
-                    document.querySelector('.action-cards').style.display = 'none';
-                } else {
-                    document.querySelector('.welcome-banner').style.display = 'block';
-                    document.querySelector('.action-cards').style.display = 'grid';
-                }
-            };
-        });
-        
-        document.getElementById('loginBtn').onclick = async () => {
-            const pass = document.getElementById('adminPassword').value;
-            if (await verifyPassword(pass)) {
-                sessionStorage.setItem('adminAuth', 'true');
-                document.getElementById('loginContainer').style.display = 'none';
-                document.getElementById('dashboardContainer').style.display = 'block';
-                loadData();
-            } else {
-                document.getElementById('loginError').innerText = 'Password salah!';
-            }
+(function() {
+    const SUPABASE_URL = "https://fhuulpwvoyubgmnooqrf.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZodXVscHd2b3l1Ymdtbm9vcXJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NDIzMzQsImV4cCI6MjA5NTExODMzNH0.Dm8inSoHfc1ICBcT1TVLSJWiVZ6rqdifZUtWCLAFTNw";
+    
+    let supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    let allData = [];
+    
+    async function verifyPassword(password) {
+        try {
+            const encoder = new TextEncoder();
+            const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(password));
+            const hashedPassword = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+            const { data: adminData } = await supabase.from('admin_config').select('password_hash').eq('password_hash', hashedPassword);
+            return adminData && adminData.length > 0;
+        } catch { return false; }
+    }
+    
+    // Tab switching
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.onclick = () => {
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            item.classList.add('active');
+            const isDataTab = item.dataset.tab === 'data';
+            document.querySelector('.welcome-banner').style.display = isDataTab ? 'none' : 'block';
+            document.querySelector('.action-cards').style.display = isDataTab ? 'none' : 'grid';
         };
-        
-        if (sessionStorage.getItem('adminAuth') === 'true') {
+    });
+    
+    // Login
+    document.getElementById('loginBtn').onclick = async () => {
+        const pass = document.getElementById('adminPassword').value;
+        if (await verifyPassword(pass)) {
+            sessionStorage.setItem('adminAuth', 'true');
             document.getElementById('loginContainer').style.display = 'none';
             document.getElementById('dashboardContainer').style.display = 'block';
             loadData();
+        } else {
+            document.getElementById('loginError').innerText = 'Password salah!';
         }
-        
-        document.getElementById('logoutBtn').onclick = () => {
-            sessionStorage.removeItem('adminAuth');
-            document.getElementById('loginContainer').style.display = 'flex';
-            document.getElementById('dashboardContainer').style.display = 'none';
-            document.getElementById('adminPassword').value = '';
-        };
-        
-        async function loadData() {
-            const tbody = document.getElementById('dataList');
-            tbody.innerHTML = '<tr><td colspan="4" class="loading-state">⏳ Memuat data...</td></tr>';
-            try {
-                const { data, error } = await supabase.from('hasil_foto').select('*').order('created_at', { ascending: false });
-                if (error) throw error;
-                allData = data || [];
-                updateStats();
-                renderTable(allData);
-            } catch (err) {
-                tbody.innerHTML = `<tr><td colspan="4" class="empty-state">❌ Error: ${err.message}</td></tr>`;
-            }
+    };
+    
+    if (sessionStorage.getItem('adminAuth') === 'true') {
+        document.getElementById('loginContainer').style.display = 'none';
+        document.getElementById('dashboardContainer').style.display = 'block';
+        loadData();
+    }
+    
+    document.getElementById('logoutBtn').onclick = () => {
+        sessionStorage.removeItem('adminAuth');
+        document.getElementById('loginContainer').style.display = 'flex';
+        document.getElementById('dashboardContainer').style.display = 'none';
+        document.getElementById('adminPassword').value = '';
+    };
+    
+    async function loadData() {
+        const tbody = document.getElementById('dataList');
+        tbody.innerHTML = '<tr><td colspan="4" class="loading-state">⏳ Memuat data...</td></tr>';
+        try {
+            const { data, error } = await supabase.from('hasil_foto').select('*').order('created_at', { ascending: false });
+            if (error) throw error;
+            allData = data || [];
+            updateStats();
+            renderTable(allData);
+        } catch (err) {
+            tbody.innerHTML = `<tr><td colspan="4" class="empty-state">❌ Error: ${err.message}</td></tr>`;
         }
-        
-        function updateStats() {
-            const totalPhotos = allData.reduce((sum, item) => sum + (item.foto_urls?.length || 0), 0);
-            const uniqueCustomers = new Set(allData.map(item => item.nama)).size;
-            const totalGifs = allData.filter(item => item.gif_url).length;
-            document.getElementById('totalData').innerText = allData.length;
-            document.getElementById('totalPhotos').innerText = totalPhotos;
-            document.getElementById('totalCustomers').innerText = uniqueCustomers;
-            document.getElementById('totalGifs').innerText = totalGifs;
+    }
+    
+    function updateStats() {
+        const totalPhotos = allData.reduce((sum, item) => sum + (item.foto_urls?.length || 0), 0);
+        const uniqueCustomers = new Set(allData.map(item => item.nama)).size;
+        const totalGifs = allData.filter(item => item.gif_url).length;
+        document.getElementById('totalData').innerText = allData.length;
+        document.getElementById('totalPhotos').innerText = totalPhotos;
+        document.getElementById('totalCustomers').innerText = uniqueCustomers;
+        document.getElementById('totalGifs').innerText = totalGifs;
+    }
+    
+    function renderTable(data) {
+        const tbody = document.getElementById('dataList');
+        if (!data || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="empty-state">📷 Belum ada data foto</td></tr>';
+            return;
         }
-        
-        function renderTable(data) {
-            const tbody = document.getElementById('dataList');
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="empty-state">📷 Belum ada data foto</td></tr>';
-                return;
-            }
-            tbody.innerHTML = data.map(item => `
-                <tr>
-                    <td class="customer-name"><span class="material-symbols-outlined">account_circle</span>${escapeHtml(item.nama)}</td>
-                    <td style="font-size:13px; color:#64748b;">${new Date(item.created_at).toLocaleDateString('id-ID')}<br><small>${new Date(item.created_at).toLocaleTimeString('id-ID')}</small></td>
-                    <td><span class="photo-badge"><span class="material-symbols-outlined">photo_camera</span> ${item.foto_urls?.length || 0} foto</span>${item.gif_url ? '<span class="photo-badge gif-badge"><span class="material-symbols-outlined">gif_box</span> GIF</span>' : ''}</td>
-                    <td>
-                        <button class="btn-detail" onclick="viewDetail('${item.id}')"><span class="material-symbols-outlined">visibility</span> Detail</button>
-                        <button class="btn-delete" onclick="deleteData('${item.id}', '${escapeHtml(item.nama)}')"><span class="material-symbols-outlined">delete</span> Hapus</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-        
-        window.viewDetail = (id) => {
-            const item = allData.find(d => d.id == id);
-            if (!item) {
-                alert('Data tidak ditemukan!');
-                return;
-            }
-            let fotoHtml = '';
-            if (item.foto_urls && item.foto_urls.length) {
-                fotoHtml = `<div class="modal-photo-grid">${item.foto_urls.map(url => `<img src="${url}" alt="foto" loading="lazy">`).join('')}</div>`;
-            }
-            let gifHtml = '';
-            if (item.gif_url) gifHtml = `<div class="modal-photo-grid"><img src="${item.gif_url}" alt="gif"></div>`;
-            document.getElementById('modalTitle').innerHTML = `<span class="material-symbols-outlined">account_circle</span> ${escapeHtml(item.nama)}`;
-            document.getElementById('modalBody').innerHTML = `
+        tbody.innerHTML = data.map(item => `
+            <tr>
+                <td class="customer-name"><span class="material-symbols-outlined">account_circle</span>${escapeHtml(item.nama)}</td>
+                <td style="font-size:13px;">${new Date(item.created_at).toLocaleDateString('id-ID')}<br><small>${new Date(item.created_at).toLocaleTimeString('id-ID')}</small></td>
+                <td><span class="photo-badge"><span class="material-symbols-outlined">photo_camera</span> ${item.foto_urls?.length || 0} foto</span>${item.gif_url ? '<span class="photo-badge gif-badge"><span class="material-symbols-outlined">gif_box</span> GIF</span>' : ''}</td>
+                <td>
+                    <button class="btn-detail" onclick="viewDetail('${item.id}')"><span class="material-symbols-outlined">visibility</span> Detail</button>
+                    <button class="btn-delete" onclick="deleteData('${item.id}', '${escapeHtml(item.nama)}')"><span class="material-symbols-outlined">delete</span> Hapus</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+    
+    window.viewDetail = (id) => {
+        const item = allData.find(d => d.id == id);
+        if (!item) return alert('Data tidak ditemukan!');
+        const fotoHtml = item.foto_urls?.length ? `<div class="modal-photo-grid">${item.foto_urls.map(url => `<img src="${url}" loading="lazy">`).join('')}</div>` : '';
+        const gifHtml = item.gif_url ? `<div class="modal-photo-grid"><img src="${item.gif_url}"></div>` : '';
+        const modalBody = document.getElementById('modalBody');
+        if (modalBody) {
+            modalBody.innerHTML = `
                 <div class="info-row">
                     <p><span class="material-symbols-outlined">event</span> <strong>Tanggal:</strong> ${new Date(item.created_at).toLocaleString('id-ID')}</p>
                     <p><span class="material-symbols-outlined">photo_library</span> <strong>Jumlah foto:</strong> ${item.foto_urls?.length || 0}</p>
-                    ${item.layout ? `<p><span class="material-symbols-outlined">grid_view</span> <strong>Layout:</strong> ${item.layout === '1strip' ? '1 Strip (Horizontal)' : '2 Strip (Grid 2x2)'}</p>` : ''}
+                    ${item.layout ? `<p><span class="material-symbols-outlined">grid_view</span> <strong>Layout:</strong> ${item.layout === '1strip' ? '1 Strip' : '2 Strip'}</p>` : ''}
                     ${item.frame ? `<p><span class="material-symbols-outlined">palette</span> <strong>Bingkai:</strong> ${item.frame}</p>` : ''}
                 </div>
                 ${fotoHtml}
                 ${gifHtml}
-                <div style="margin-top: 20px; text-align: center;">
-                    <button onclick="closeModal()" style="padding: 10px 28px; background: #6366f1; color: white; border: none; border-radius: 30px; cursor: pointer;">Tutup</button>
-                </div>
+                <div style="text-align:center; margin-top:20px;"><button onclick="closeModal()" style="padding:10px 28px; background:#6366f1; color:white; border:none; border-radius:30px; cursor:pointer;">Tutup</button></div>
             `;
-            document.getElementById('modal').style.display = 'flex';
-        };
-        
-        window.closeModal = () => document.getElementById('modal').style.display = 'none';
-        
-        window.deleteData = async (id, nama) => {
-            if (!confirm(`⚠️ Yakin ingin menghapus data "${nama}"? Data tidak dapat dikembalikan.`)) return;
-            try {
-                await supabase.from('hasil_foto').delete().eq('id', id);
-                alert(`✅ Data "${nama}" berhasil dihapus!`);
-                loadData();
-            } catch (err) {
-                alert(`❌ Gagal hapus: ${err.message}`);
-            }
-        };
-        
-        window.refreshData = () => loadData();
-        document.getElementById('refreshBtn').onclick = () => { document.getElementById('searchInput').value = ''; loadData(); };
-        document.getElementById('searchInput').onkeyup = () => {
-            const keyword = document.getElementById('searchInput').value.toLowerCase();
-            if (!keyword) return renderTable(allData);
-            const filtered = allData.filter(item => item.nama.toLowerCase().includes(keyword));
-            renderTable(filtered);
-        };
-        
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m] || m));
         }
-        document.addEventListener('keydown', (e) => e.key === 'Escape' && closeModal());
-    })();
+        document.getElementById('modal').style.display = 'flex';
+    };
+    
+    window.closeModal = () => document.getElementById('modal').style.display = 'none';
+    
+    window.deleteData = async (id, nama) => {
+        if (!confirm(`⚠️ Hapus data "${nama}"?`)) return;
+        try {
+            await supabase.from('hasil_foto').delete().eq('id', id);
+            alert(`✅ Data "${nama}" dihapus!`);
+            loadData();
+        } catch (err) {
+            alert(`❌ Gagal: ${err.message}`);
+        }
+    };
+    
+    window.refreshData = () => loadData();
+    document.getElementById('refreshBtn').onclick = () => { document.getElementById('searchInput').value = ''; loadData(); };
+    document.getElementById('searchInput').onkeyup = () => {
+        const keyword = document.getElementById('searchInput').value.toLowerCase();
+        renderTable(keyword ? allData.filter(item => item.nama.toLowerCase().includes(keyword)) : allData);
+    };
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m] || m));
+    }
+    document.addEventListener('keydown', e => e.key === 'Escape' && closeModal());
+})();
 </script>
 </body>
 </html>
