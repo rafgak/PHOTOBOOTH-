@@ -1,0 +1,19 @@
+-- Buat ulang tabel kalo perlu
+DROP TABLE IF EXISTS hasil_foto;
+
+CREATE TABLE hasil_foto (
+    id SERIAL PRIMARY KEY,
+    nama TEXT NOT NULL,
+    foto_urls TEXT[] NOT NULL,
+    gif_url TEXT,
+    layout TEXT,
+    frame TEXT,
+    session_id TEXT,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Matikan RLS
+ALTER TABLE hasil_foto DISABLE ROW LEVEL SECURITY;
+
+-- Buat index
+CREATE INDEX idx_session_id ON hasil_foto(session_id);
