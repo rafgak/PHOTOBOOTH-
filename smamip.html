@@ -242,7 +242,7 @@
             font-weight: 600;
             font-size: 0.8rem;
             color: #64748b;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 6px;
@@ -252,6 +252,45 @@
             font-size: 18px;
         }
 
+        /* Bingkai lucu - wallpaper style */
+        .frame-wallpaper {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .frame-wallpaper-item {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            min-width: 80px;
+        }
+
+        .frame-wallpaper-item.selected {
+            border-color: #f5a623;
+            background: #fff8ed;
+            transform: scale(1.02);
+        }
+
+        .frame-wallpaper-item span {
+            font-size: 32px;
+        }
+
+        .frame-wallpaper-item .frame-name {
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #334155;
+        }
+
+        /* Layout pilihan */
         .layout-options {
             display: flex;
             gap: 12px;
@@ -291,36 +330,6 @@
             font-size: 0.6rem;
             color: #94a3b8;
             margin-top: 4px;
-        }
-
-        .frame-options {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .frame-btn {
-            background: white;
-            border: 1.5px solid #e2e8f0;
-            padding: 7px 16px;
-            border-radius: 40px;
-            color: #334155;
-            cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .frame-btn span {
-            font-size: 16px;
-        }
-
-        .frame-btn.selected {
-            background: #0b3b2f;
-            border-color: #0b3b2f;
-            color: white;
         }
 
         /* Tombol aksi */
@@ -440,6 +449,8 @@
             .photo-item { width: 70px; height: 70px; }
             .layout-card { min-width: 85px; padding: 8px 12px; }
             .capture-btn { padding: 10px 20px; font-size: 0.8rem; }
+            .frame-wallpaper-item { min-width: 70px; padding: 6px 12px; }
+            .frame-wallpaper-item span { font-size: 26px; }
         }
     </style>
 </head>
@@ -491,7 +502,7 @@
         </div>
     </div>
 
-    <!-- Pilihan layout & bingkai -->
+    <!-- Pilihan layout & bingkai lucu -->
     <div id="layoutSection" style="display: none;">
         <div class="option-section">
             <div class="option-title">
@@ -518,26 +529,50 @@
 
         <div class="option-section">
             <div class="option-title">
-                <span class="material-symbols-outlined">palette</span>
-                Pilih Bingkai
+                <span class="material-symbols-outlined">auto_awesome</span>
+                Pilih Bingkai Lucu & Wallpaper
             </div>
-            <div class="frame-options" id="frameOptions">
-                <button class="frame-btn" data-frame="Modern">
+            <div class="frame-wallpaper" id="frameWallpaperOptions">
+                <div class="frame-wallpaper-item" data-frame="Modern">
                     <span class="material-symbols-outlined">style</span>
-                    Modern
-                </button>
-                <button class="frame-btn" data-frame="Polaroid">
+                    <span class="frame-name">Modern</span>
+                </div>
+                <div class="frame-wallpaper-item" data-frame="Polaroid">
                     <span class="material-symbols-outlined">crop_7_5</span>
-                    Polaroid
-                </button>
-                <button class="frame-btn" data-frame="Classic">
+                    <span class="frame-name">Polaroid</span>
+                </div>
+                <div class="frame-wallpaper-item" data-frame="Classic">
                     <span class="material-symbols-outlined">crown</span>
-                    Classic
-                </button>
-                <button class="frame-btn" data-frame="Minimalis">
+                    <span class="frame-name">Classic</span>
+                </div>
+                <div class="frame-wallpaper-item" data-frame="Minimalis">
                     <span class="material-symbols-outlined">crop_original</span>
-                    Minimalis
-                </button>
+                    <span class="frame-name">Minimalis</span>
+                </div>
+                <div class="frame-wallpaper-item" data-frame="Bunga">
+                    <span class="material-symbols-outlined">local_florist</span>
+                    <span class="frame-name">Bunga</span>
+                </div>
+                <div class="frame-wallpaper-item" data-frame="Bintang">
+                    <span class="material-symbols-outlined">stars</span>
+                    <span class="frame-name">Bintang</span>
+                </div>
+                <div class="frame-wallpaper-item" data-frame="Love">
+                    <span class="material-symbols-outlined">favorite</span>
+                    <span class="frame-name">Love</span>
+                </div>
+                <div class="frame-wallpaper-item" data-frame="Rainbow">
+                    <span class="material-symbols-outlined">rainbow</span>
+                    <span class="frame-name">Rainbow</span>
+                </div>
+                <div class="frame-wallpaper-item" data-frame="Party">
+                    <span class="material-symbols-outlined">celebration</span>
+                    <span class="frame-name">Party</span>
+                </div>
+                <div class="frame-wallpaper-item" data-frame="Galaxy">
+                    <span class="material-symbols-outlined">lens_blur</span>
+                    <span class="frame-name">Galaxy</span>
+                </div>
             </div>
         </div>
 
@@ -583,14 +618,39 @@
     const layoutSection = document.getElementById('layoutSection');
     const uploadBtn = document.getElementById('uploadBtn');
     const loadingDiv = document.getElementById('loading');
-    const appContainer = document.getElementById('appContainer');
     
     maxPhotoSpan.textContent = MAX_PHOTOS;
     
-    // Resize video stream sesuai device
+    // Bingkai lucu data
+    const frameData = {
+        Modern: { color: "#7C3AED", icon: "style" },
+        Polaroid: { color: "#10B981", icon: "crop_7_5" },
+        Classic: { color: "#D4AF37", icon: "crown" },
+        Minimalis: { color: "#333333", icon: "crop_original" },
+        Bunga: { color: "#EC4899", icon: "local_florist", bg: "linear-gradient(135deg, #ffe4ec, #ffb6c1)" },
+        Bintang: { color: "#F59E0B", icon: "stars", bg: "radial-gradient(circle, #1a1a2e, #16213e)" },
+        Love: { color: "#EF4444", icon: "favorite", bg: "linear-gradient(135deg, #ffdde1, #ee9ca7)" },
+        Rainbow: { color: "#8B5CF6", icon: "rainbow", bg: "linear-gradient(135deg, #ff9a9e, #fad0c4, #fad0c4, #ffdde1)" },
+        Party: { color: "#F43F5E", icon: "celebration", bg: "linear-gradient(135deg, #f5af19, #f12711, #f5af19)" },
+        Galaxy: { color: "#A855F7", icon: "lens_blur", bg: "linear-gradient(135deg, #0f0c29, #302b63, #24243e)" }
+    };
+    
+    // Apply frame style ke UI
+    document.querySelectorAll('.frame-wallpaper-item').forEach(el => {
+        const frameName = el.dataset.frame;
+        if (frameData[frameName]) {
+            el.style.borderColor = frameData[frameName].color;
+        }
+        el.onclick = () => {
+            document.querySelectorAll('.frame-wallpaper-item').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedFrame = frameName;
+        };
+    });
+    document.querySelector('.frame-wallpaper-item').classList.add('selected');
+    
     async function startCamera() {
         try {
-            // Dapatkan ukuran terbaik untuk device
             const constraints = {
                 video: {
                     width: { ideal: 1280 },
@@ -598,18 +658,13 @@
                     facingMode: 'user'
                 }
             };
-            
             stream = await navigator.mediaDevices.getUserMedia(constraints);
             video.srcObject = stream;
-            
-            // Pastikan video container menyesuaikan
             video.onloadedmetadata = () => {
                 const container = video.parentElement;
-                const aspect = video.videoHeight / video.videoWidth;
                 container.style.aspectRatio = `${video.videoWidth} / ${video.videoHeight}`;
             };
         } catch (err) {
-            // Fallback ke constraint default
             try {
                 stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 video.srcObject = stream;
@@ -643,7 +698,6 @@
                 canvas.height = videoHeight;
                 const ctx = canvas.getContext('2d');
                 
-                // Gambar dengan mirror agar natural
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                 ctx.translate(canvas.width, 0);
                 ctx.scale(-1, 1);
@@ -654,7 +708,6 @@
                 photos.push(photoUrl);
                 updateGallery();
                 
-                // Flash
                 const flash = document.createElement('div');
                 flash.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:white;z-index:999;pointer-events:none;opacity:0.9';
                 document.body.appendChild(flash);
@@ -704,15 +757,6 @@
         };
     });
     document.querySelector('.layout-card').classList.add('selected');
-    
-    document.querySelectorAll('.frame-btn').forEach(el => {
-        el.onclick = () => {
-            document.querySelectorAll('.frame-btn').forEach(c => c.classList.remove('selected'));
-            el.classList.add('selected');
-            selectedFrame = el.dataset.frame;
-        };
-    });
-    document.querySelector('.frame-btn').classList.add('selected');
     
     uploadBtn.onclick = async () => {
         if (photos.length === 0) {
@@ -766,7 +810,7 @@
                         <span class="material-symbols-outlined">check</span>
                     </div>
                     <h2 style="color: #0b3b2f; margin-bottom: 8px;">Upload Berhasil!</h2>
-                    <p style="color: #64748b; margin-bottom: 24px;">${photos.length} foto telah diupload</p>
+                    <p style="color: #64748b; margin-bottom: 24px;">${photos.length} foto telah diupload dengan bingkai ${selectedFrame}</p>
                     
                     <div style="background: white; border-radius: 20px; padding: 16px; margin-bottom: 20px;">
                         <canvas id="qrCanvas" style="width: 180px; height: 180px; margin: 0 auto;"></canvas>
