@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasil Foto - SMAM 4</title>
+    <style>
+        body { font-family: system-ui; background: #f8f9fc; padding: 20px; text-align: center; }
+        img { max-width: 100%; border-radius: 16px; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .error { color: red; margin-top: 40px; }
+    </style>
+</head>
+<body>
+<h2>📸 Hasil Foto Kamu</h2>
+<div id="content">Loading...</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://fhuulpwvoyubgmnooqrf.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZodXVscHd2b3l1Ymdtbm9vcXJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NDIzMzQsImV4cCI6MjA5NTExODMzNH0.Dm8inSoHfc1ICBcT1TVLSJWiVZ6rqdifZUtWCLAFTNw";
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const sessionId = new URLSearchParams(location.search).get('session');
+
+if (!sessionId) {
+    document.getElementById('content').innerHTML = '<p class="error">Session ID tidak ditemukan</p>';
+} else {
+    supabase.from('hasil_foto').select('*').eq('session_id', sessionId).then(({ data, error }) => {
+        if (error || !data || data.length === 0) {
+            document.getElementById('content').innerHTML = '<p class="error">Hasil foto tidak ditemukan</p>';
+        } else {
+            const foto = data[0];
+            document.getElementById('content').innerHTML = `<img src="${foto.foto_urls[0]}" alt="foto strip"><p><strong>${foto.nama}</strong><br>${new Date(foto.created_at).toLocaleString('id-ID')}</p>`;
+        }
+    });
+}
+</script>
+</body>
+</html>
