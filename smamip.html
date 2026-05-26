@@ -214,8 +214,8 @@
         </div>
 
         <div class="action-buttons">
-            <button class="btn-primary" id="uploadStripBtn"><span class="material-symbols-outlined">cloud_upload</span> Simpan & Dapatkan QR</button>
-            <button class="btn-outline" id="backToCameraBtn"><span class="material-symbols-outlined">arrow_back</span> Ambil Foto Lagi</button>
+            <button class="btn-primary" id="uploadStripBtn"><span class="material-symbols-outlined">cloud_upload</span> Download via QR Code</button>
+            <button class="btn-outline" id="backToCameraBtn"><span class="material-symbols-outlined">arrow_back</span> Take New Photos</button>
         </div>
     </div>
 </div>
@@ -227,6 +227,7 @@
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 <script>
 (function() {
+    // 🔥 UPDATE SUPABASE KEY 🔥
     const SUPABASE_URL = "https://fhuulpwvoyubgmnooqrf.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZodXVscHd2b3l1Ymdtbm9vcXJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NDIzMzQsImV4cCI6MjA5NTExODMzNH0.Dm8inSoHfc1ICBcT1TVLSJWiVZ6rqdifZUtWCLAFTNw";
     const WEB_URL = "https://photoboothsmamip.vercel.app";
@@ -262,40 +263,34 @@
     const today = new Date();
     document.getElementById('watermarkDate').textContent = `${today.getDate().toString().padStart(2,'0')}/${(today.getMonth()+1).toString().padStart(2,'0')}/${today.getFullYear()} ${today.getHours().toString().padStart(2,'0')}:${today.getMinutes().toString().padStart(2,'0')}`;
     
-    if (document.querySelectorAll('.color-circle').length) {
-        document.querySelectorAll('.color-circle').forEach(el => {
-            el.onclick = () => {
-                document.querySelectorAll('.color-circle').forEach(c => c.classList.remove('selected'));
-                el.classList.add('selected');
-                selectedColor = el.dataset.color;
-                updateStripPreview();
-            };
-        });
-        document.querySelector('.color-circle')?.classList.add('selected');
-    }
-    
-    if (customColorInput) {
-        customColorInput.oninput = (e) => {
-            customColor = e.target.value;
-            if (customColor) {
-                document.querySelectorAll('.color-circle').forEach(c => c.classList.remove('selected'));
-                selectedColor = customColor;
-                updateStripPreview();
-            }
+    document.querySelectorAll('.color-circle').forEach(el => {
+        el.onclick = () => {
+            document.querySelectorAll('.color-circle').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedColor = el.dataset.color;
+            updateStripPreview();
         };
-    }
+    });
+    document.querySelector('.color-circle')?.classList.add('selected');
     
-    if (document.querySelectorAll('.sticker-btn').length) {
-        document.querySelectorAll('.sticker-btn').forEach(el => {
-            el.onclick = () => {
-                document.querySelectorAll('.sticker-btn').forEach(s => s.classList.remove('selected'));
-                el.classList.add('selected');
-                selectedSticker = el.dataset.sticker;
-                updateStripPreview();
-            };
-        });
-        document.querySelector('.sticker-btn')?.classList.add('selected');
-    }
+    customColorInput.oninput = (e) => {
+        customColor = e.target.value;
+        if (customColor) {
+            document.querySelectorAll('.color-circle').forEach(c => c.classList.remove('selected'));
+            selectedColor = customColor;
+            updateStripPreview();
+        }
+    };
+    
+    document.querySelectorAll('.sticker-btn').forEach(el => {
+        el.onclick = () => {
+            document.querySelectorAll('.sticker-btn').forEach(s => s.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedSticker = el.dataset.sticker;
+            updateStripPreview();
+        };
+    });
+    document.querySelector('.sticker-btn')?.classList.add('selected');
     
     function updateStripPreview() {
         const stripContainer = document.querySelector('.photo-strip-final');
@@ -319,7 +314,7 @@
     
     async function startCamera() {
         try {
-            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+            stream = await navigator.mediaDevices.getUserMedia({ video: true });
             if (video) video.srcObject = stream;
         } catch { alert('Tidak dapat mengakses kamera.'); }
     }
@@ -367,51 +362,50 @@
     
     window.deletePhoto = (idx) => { photos.splice(idx, 1); updateGallery(); };
     
-    if (selesaiBtn) selesaiBtn.onclick = () => {
+    selesaiBtn.onclick = () => {
         if (!photos.length) { alert('Ambil minimal 1 foto!'); return; }
-        if (gallery) gallery.style.display = 'none';
-        if (customizeSection) customizeSection.style.display = 'block';
+        gallery.style.display = 'none';
+        customizeSection.style.display = 'block';
         updateStripPreview();
     };
     
-    if (backToCameraBtn) backToCameraBtn.onclick = () => {
-        if (customizeSection) customizeSection.style.display = 'none';
-        if (gallery) gallery.style.display = 'block';
+    backToCameraBtn.onclick = () => {
+        customizeSection.style.display = 'none';
+        gallery.style.display = 'block';
     };
     
-    if (uploadStripBtn) {
-        uploadStripBtn.onclick = async () => {
-            if (!photos.length) { alert('Tidak ada foto!'); return; }
-            if (loadingDiv) loadingDiv.style.display = 'flex';
-            try {
-                const fotoUrls = [];
-                const timestamp = Date.now();
-                for (let i = 0; i < photos.length; i++) {
-                    const blob = await (await fetch(photos[i])).blob();
-                    const filename = `${sessionId}_${timestamp}_${i}.png`;
-                    await supabase.storage.from('foto').upload(filename, blob);
-                    fotoUrls.push(supabase.storage.from('foto').getPublicUrl(filename).data.publicUrl);
-                }
-                const payload = {
-                    nama: "Siswa SMAM 4",
-                    foto_urls: fotoUrls,
-                    layout: "vertical_strip",
-                    frame_color: selectedColor,
-                    sticker: selectedSticker,
-                    session_id: sessionId,
-                    created_at: new Date().toISOString()
-                };
-                const { error } = await supabase.from('hasil_foto').insert([payload]);
-                if (error) throw error;
-                if (loadingDiv) loadingDiv.style.display = 'none';
-                document.body.innerHTML = `<div style="min-height:100vh; background:#f8f9fc; display:flex; align-items:center; justify-content:center; padding:20px;"><div style="max-width:450px; background:white; border-radius:32px; padding:32px 20px; text-align:center;"><div style="background:#0b3b2f; width:64px; height:64px; border-radius:50%; display:flex; margin:0 auto 20px;"><span style="margin:auto; font-size:36px; color:#f5a623;">✅</span></div><h2 style="color:#0b3b2f;">Upload Berhasil!</h2><p style="margin-bottom:20px;">${photos.length} foto disimpan</p><div style="background:#f1f5f9; border-radius:20px; padding:16px; margin-bottom:20px;"><canvas id="qrCanvas" style="width:180px; height:180px; margin:0 auto;"></canvas></div><div style="font-size:12px; word-break:break-all; background:#f1f5f9; padding:10px; border-radius:12px;">${WEB_URL}/index.html?session=${sessionId}</div><div style="margin-top:20px; display:flex; gap:12px; justify-content:center;"><button onclick="location.reload()" style="background:#f5a623; border:none; padding:10px 20px; border-radius:40px;">📸 Ambil Lagi</button><button onclick="window.location.href='admin.html'" style="background:white; border:1px solid #e2e8f0; padding:10px 20px; border-radius:40px;">Admin</button></div></div></div>`;
-                QRCode.toCanvas(document.getElementById('qrCanvas'), `${WEB_URL}/index.html?session=${sessionId}`, { width: 180 });
-            } catch (err) { if (loadingDiv) loadingDiv.style.display = 'none'; alert('Upload gagal: ' + err.message); }
-        };
-    }
+    uploadStripBtn.onclick = async () => {
+        if (!photos.length) { alert('Tidak ada foto!'); return; }
+        loadingDiv.style.display = 'flex';
+        try {
+            const fotoUrls = [];
+            const timestamp = Date.now();
+            for (let i = 0; i < photos.length; i++) {
+                const blob = await (await fetch(photos[i])).blob();
+                const filename = `${sessionId}_${timestamp}_${i}.png`;
+                await supabase.storage.from('foto').upload(filename, blob);
+                fotoUrls.push(supabase.storage.from('foto').getPublicUrl(filename).data.publicUrl);
+            }
+            // HAPUS custom_color dari payload!
+            const payload = {
+                nama: "Siswa SMAM 4",
+                foto_urls: fotoUrls,
+                layout: "vertical_strip",
+                frame_color: selectedColor,
+                sticker: selectedSticker,
+                session_id: sessionId,
+                created_at: new Date().toISOString()
+            };
+            const { error } = await supabase.from('hasil_foto').insert([payload]);
+            if (error) throw error;
+            loadingDiv.style.display = 'none';
+            document.body.innerHTML = `<div style="min-height:100vh; background:#f8f9fc; display:flex; align-items:center; justify-content:center; padding:20px;"><div style="max-width:450px; background:white; border-radius:32px; padding:32px 20px; text-align:center;"><div style="background:#0b3b2f; width:64px; height:64px; border-radius:50%; display:flex; margin:0 auto 20px;"><span style="margin:auto; font-size:36px; color:#f5a623;">✅</span></div><h2 style="color:#0b3b2f;">Upload Berhasil!</h2><p style="margin-bottom:20px;">${photos.length} foto disimpan</p><div style="background:#f1f5f9; border-radius:20px; padding:16px; margin-bottom:20px;"><canvas id="qrCanvas" style="width:180px; height:180px; margin:0 auto;"></canvas></div><div style="font-size:12px; word-break:break-all; background:#f1f5f9; padding:10px; border-radius:12px;">${WEB_URL}/index.html?session=${sessionId}</div><div style="margin-top:20px; display:flex; gap:12px; justify-content:center;"><button onclick="location.reload()" style="background:#f5a623; border:none; padding:10px 20px; border-radius:40px;">📸 Ambil Lagi</button><button onclick="window.location.href='admin.html'" style="background:white; border:1px solid #e2e8f0; padding:10px 20px; border-radius:40px;">Admin</button></div></div></div>`;
+            QRCode.toCanvas(document.getElementById('qrCanvas'), `${WEB_URL}/index.html?session=${sessionId}`, { width: 180 });
+        } catch (err) { loadingDiv.style.display = 'none'; alert('Upload gagal: ' + err.message); }
+    };
     
     startCamera();
-    if (captureBtn) captureBtn.onclick = capturePhoto;
+    captureBtn.onclick = capturePhoto;
 })();
 </script>
 </body>
