@@ -239,6 +239,7 @@
     
     let selectedColor = "white";
     let selectedSticker = "none";
+    let selectedLayout = "2strip";
     let customColor = "";
     
     const video = document.getElementById('video');
@@ -290,6 +291,15 @@
         };
     });
     document.querySelector('.sticker-btn')?.classList.add('selected');
+    
+    document.querySelectorAll('.layout-card').forEach(el => {
+        el.onclick = () => {
+            document.querySelectorAll('.layout-card').forEach(l => l.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedLayout = el.dataset.layout;
+            updateStripPreview();
+        };
+    });
     
     function updateStripPreview() {
         const stripContainer = document.querySelector('.photo-strip-final');
@@ -460,7 +470,6 @@
             await supabase.storage.from('foto').upload(stripFilename, stripBlob);
             const { data: stripUrlData } = supabase.storage.from('foto').getPublicUrl(stripFilename);
             
-            // Tambahkan strip ke foto_urls
             fotoUrls.push(stripUrlData.publicUrl);
             
             // 3. SIMPAN KE DATABASE
