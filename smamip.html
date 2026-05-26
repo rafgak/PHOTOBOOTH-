@@ -102,7 +102,6 @@
         .custom-input { margin-top: 12px; }
         .custom-input input { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 0.8rem; }
 
-        /* Sticker baru dengan gambar anjing dan lainnya */
         .sticker-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 8px; }
         .sticker-btn {
             background: white;
@@ -199,7 +198,7 @@
             </div>
 
             <div class="customize-card" style="background: #f8f9fc; border-radius: 20px; padding: 20px;">
-                <h4 style="margin-bottom: 16px;"><span class="material-symbols-outlined">auto_awesome</span> Stickers (🐶🐱❤️✨)</h4>
+                <h4 style="margin-bottom: 16px;"><span class="material-symbols-outlined">auto_awesome</span> Stickers 🐶🐱❤️</h4>
                 <div class="sticker-grid" id="stickerOptions">
                     <div class="sticker-btn" data-sticker="none">
                         <span class="sticker-emoji">🚫</span>
@@ -236,18 +235,6 @@
                     <div class="sticker-btn" data-sticker="rainbow">
                         <span class="sticker-emoji">🌈</span>
                         <span class="sticker-label">Rainbow</span>
-                    </div>
-                    <div class="sticker-btn" data-sticker="sparkle">
-                        <span class="sticker-emoji">✨</span>
-                        <span class="sticker-label">Sparkle</span>
-                    </div>
-                    <div class="sticker-btn" data-sticker="crown">
-                        <span class="sticker-emoji">👑</span>
-                        <span class="sticker-label">Crown</span>
-                    </div>
-                    <div class="sticker-btn" data-sticker="butterfly">
-                        <span class="sticker-emoji">🦋</span>
-                        <span class="sticker-label">Butterfly</span>
                     </div>
                 </div>
             </div>
@@ -306,47 +293,51 @@
         flower: '🌸',
         panda: '🐼',
         unicorn: '🦄',
-        rainbow: '🌈',
-        sparkle: '✨',
-        crown: '👑',
-        butterfly: '🦋'
+        rainbow: '🌈'
     };
     
     const today = new Date();
     const formattedDate = `${today.getDate().toString().padStart(2,'0')}/${(today.getMonth()+1).toString().padStart(2,'0')}/${today.getFullYear()} ${today.getHours().toString().padStart(2,'0')}:${today.getMinutes().toString().padStart(2,'0')}`;
     document.getElementById('watermarkDate').textContent = formattedDate;
     
-    document.querySelectorAll('.color-circle').forEach(el => {
-        el.onclick = () => {
-            document.querySelectorAll('.color-circle').forEach(c => c.classList.remove('selected'));
-            el.classList.add('selected');
-            selectedColor = el.dataset.color;
-            updateStripPreview();
-        };
-    });
-    document.querySelector('.color-circle').classList.add('selected');
+    if (document.querySelectorAll('.color-circle').length) {
+        document.querySelectorAll('.color-circle').forEach(el => {
+            el.onclick = () => {
+                document.querySelectorAll('.color-circle').forEach(c => c.classList.remove('selected'));
+                el.classList.add('selected');
+                selectedColor = el.dataset.color;
+                updateStripPreview();
+            };
+        });
+        document.querySelector('.color-circle')?.classList.add('selected');
+    }
     
-    customColorInput.oninput = (e) => {
-        customColor = e.target.value;
-        if (customColor) {
-            document.querySelectorAll('.color-circle').forEach(c => c.classList.remove('selected'));
-            selectedColor = customColor;
-            updateStripPreview();
-        }
-    };
-    
-    document.querySelectorAll('.sticker-btn').forEach(el => {
-        el.onclick = () => {
-            document.querySelectorAll('.sticker-btn').forEach(s => s.classList.remove('selected'));
-            el.classList.add('selected');
-            selectedSticker = el.dataset.sticker;
-            updateStripPreview();
+    if (customColorInput) {
+        customColorInput.oninput = (e) => {
+            customColor = e.target.value;
+            if (customColor) {
+                document.querySelectorAll('.color-circle').forEach(c => c.classList.remove('selected'));
+                selectedColor = customColor;
+                updateStripPreview();
+            }
         };
-    });
-    document.querySelector('.sticker-btn').classList.add('selected');
+    }
+    
+    if (document.querySelectorAll('.sticker-btn').length) {
+        document.querySelectorAll('.sticker-btn').forEach(el => {
+            el.onclick = () => {
+                document.querySelectorAll('.sticker-btn').forEach(s => s.classList.remove('selected'));
+                el.classList.add('selected');
+                selectedSticker = el.dataset.sticker;
+                updateStripPreview();
+            };
+        });
+        document.querySelector('.sticker-btn')?.classList.add('selected');
+    }
     
     function updateStripPreview() {
         const stripContainer = document.querySelector('.photo-strip-final');
+        if (!stripContainer) return;
         let bgColor = selectedColor;
         const colorMap = { white: "#ffffff", black: "#1a1a1a", pink: "#f472b6", green: "#22c55e", blue: "#3b82f6", yellow: "#eab308", purple: "#a855f7", maroon: "#b91c1c", burgundy: "#7f1d1d" };
         if (colorMap[selectedColor]) bgColor = colorMap[selectedColor];
@@ -369,26 +360,29 @@
     async function startCamera() {
         try {
             stream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' } });
-            video.srcObject = stream;
+            if (video) video.srcObject = stream;
         } catch (err) {
             try {
                 stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                video.srcObject = stream;
+                if (video) video.srcObject = stream;
             } catch (e) { alert('Tidak dapat mengakses kamera.'); }
         }
     }
     
     function capturePhoto() {
+        if (!video) return;
         if (photos.length >= MAX_PHOTOS) { alert(`Maksimal ${MAX_PHOTOS} foto!`); return; }
         let count = 3;
-        countdownDiv.style.display = 'block';
-        countdownDiv.textContent = count;
+        if (countdownDiv) {
+            countdownDiv.style.display = 'block';
+            countdownDiv.textContent = count;
+        }
         const interval = setInterval(() => {
             count--;
-            countdownDiv.textContent = count;
+            if (countdownDiv) countdownDiv.textContent = count;
             if (count <= 0) {
                 clearInterval(interval);
-                countdownDiv.style.display = 'none';
+                if (countdownDiv) countdownDiv.style.display = 'none';
                 const canvas = document.createElement('canvas');
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
@@ -410,65 +404,75 @@
     }
     
     function updateGallery() {
+        if (!gallery) return;
         gallery.style.display = 'block';
-        photoCountSpan.textContent = photos.length;
+        if (photoCountSpan) photoCountSpan.textContent = photos.length;
+        if (!photoList) return;
         if (photos.length === 0) { photoList.innerHTML = '<div style="color:#94a3b8; padding:12px;">Belum ada foto</div>'; return; }
         photoList.innerHTML = photos.map((photo, idx) => `<div class="photo-item"><img src="${photo}"><div class="delete-btn" onclick="window.deletePhoto(${idx})"><span class="material-symbols-outlined">close</span></div></div>`).join('');
         const stripPhotosDiv = document.getElementById('stripPhotos');
-        if (photos.length > 0) {
-            stripPhotosDiv.innerHTML = photos.map(p => `<div class="strip-photo"><img src="${p}"></div>`).join('');
-        } else {
-            stripPhotosDiv.innerHTML = '<div class="empty-strip">Belum ada foto</div>';
+        if (stripPhotosDiv) {
+            if (photos.length > 0) {
+                stripPhotosDiv.innerHTML = photos.map(p => `<div class="strip-photo"><img src="${p}"></div>`).join('');
+            } else {
+                stripPhotosDiv.innerHTML = '<div class="empty-strip">Belum ada foto</div>';
+            }
         }
         updateStripPreview();
     }
     
     window.deletePhoto = function(idx) { photos.splice(idx, 1); updateGallery(); };
     
-    selesaiBtn.onclick = () => {
-        if (photos.length === 0) { alert('Ambil minimal 1 foto!'); return; }
-        gallery.style.display = 'none';
-        customizeSection.style.display = 'block';
-        updateStripPreview();
-    };
+    if (selesaiBtn) {
+        selesaiBtn.onclick = () => {
+            if (photos.length === 0) { alert('Ambil minimal 1 foto!'); return; }
+            if (gallery) gallery.style.display = 'none';
+            if (customizeSection) customizeSection.style.display = 'block';
+            updateStripPreview();
+        };
+    }
     
-    backToCameraBtn.onclick = () => {
-        customizeSection.style.display = 'none';
-        gallery.style.display = 'block';
-    };
+    if (backToCameraBtn) {
+        backToCameraBtn.onclick = () => {
+            if (customizeSection) customizeSection.style.display = 'none';
+            if (gallery) gallery.style.display = 'block';
+        };
+    }
     
-    uploadStripBtn.onclick = async () => {
-        if (photos.length === 0) { alert('Tidak ada foto!'); return; }
-        loadingDiv.style.display = 'flex';
-        try {
-            const fotoUrls = [];
-            const timestamp = Date.now();
-            for (let i = 0; i < photos.length; i++) {
-                const response = await fetch(photos[i]);
-                const blob = await response.blob();
-                const filename = `${sessionId}_${timestamp}_${i}.png`;
-                await supabase.storage.from('foto').upload(filename, blob);
-                const { data } = supabase.storage.from('foto').getPublicUrl(filename);
-                fotoUrls.push(data.publicUrl);
+    if (uploadStripBtn) {
+        uploadStripBtn.onclick = async () => {
+            if (photos.length === 0) { alert('Tidak ada foto!'); return; }
+            if (loadingDiv) loadingDiv.style.display = 'flex';
+            try {
+                const fotoUrls = [];
+                const timestamp = Date.now();
+                for (let i = 0; i < photos.length; i++) {
+                    const response = await fetch(photos[i]);
+                    const blob = await response.blob();
+                    const filename = `${sessionId}_${timestamp}_${i}.png`;
+                    await supabase.storage.from('foto').upload(filename, blob);
+                    const { data } = supabase.storage.from('foto').getPublicUrl(filename);
+                    fotoUrls.push(data.publicUrl);
+                }
+                const data = {
+                    nama: "Siswa SMAM 4",
+                    foto_urls: fotoUrls,
+                    layout: "vertical_strip",
+                    frame_color: selectedColor === "white" ? "white" : selectedColor,
+                    sticker: selectedSticker,
+                    custom_color: customColor || null,
+                    session_id: sessionId,
+                    created_at: new Date().toISOString()
+                };
+                await supabase.from('hasil_foto').insert([data]);
+                if (loadingDiv) loadingDiv.style.display = 'none';
+                showQRResult();
+            } catch (err) {
+                if (loadingDiv) loadingDiv.style.display = 'none';
+                alert('Upload gagal: ' + err.message);
             }
-            const data = {
-                nama: "Siswa SMAM 4",
-                foto_urls: fotoUrls,
-                layout: "vertical_strip",
-                frame_color: selectedColor === "white" ? "white" : selectedColor,
-                sticker: selectedSticker,
-                custom_color: customColor || null,
-                session_id: sessionId,
-                created_at: new Date().toISOString()
-            };
-            await supabase.from('hasil_foto').insert([data]);
-            loadingDiv.style.display = 'none';
-            showQRResult();
-        } catch (err) {
-            loadingDiv.style.display = 'none';
-            alert('Upload gagal: ' + err.message);
-        }
-    };
+        };
+    }
     
     function showQRResult() {
         const url = `${WEB_URL}/index.html?session=${sessionId}`;
@@ -477,7 +481,7 @@
     }
     
     startCamera();
-    captureBtn.onclick = capturePhoto;
+    if (captureBtn) captureBtn.onclick = capturePhoto;
 })();
 </script>
 </body>
