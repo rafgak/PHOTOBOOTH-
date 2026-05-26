@@ -5,75 +5,81 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>SMAM 4 - Photo Booth</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: system-ui; background: #0b3b2f; padding: 20px; color: white; text-align: center; }
-        video, canvas { width: 100%; max-width: 400px; border-radius: 20px; background: #000; }
-        button { background: #f5a623; border: none; padding: 12px 20px; border-radius: 40px; font-weight: bold; margin: 10px; cursor: pointer; }
-        .photo-list { display: flex; justify-content: center; gap: 10px; margin: 20px 0; flex-wrap: wrap; }
+        body { font-family: system-ui; background: #0b3b2f; color: white; text-align: center; padding: 20px; }
+        video, canvas { width: 100%; max-width: 400px; border-radius: 20px; background: #000; margin: 10px auto; display: block; }
+        button { background: #f5a623; border: none; padding: 12px 24px; border-radius: 40px; font-weight: bold; margin: 10px; cursor: pointer; }
+        .photo-list { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 20px 0; }
         .photo-item { width: 80px; height: 80px; border-radius: 12px; overflow: hidden; border: 2px solid white; position: relative; }
         .photo-item img { width: 100%; height: 100%; object-fit: cover; }
         .delete-btn { position: absolute; top: -8px; right: -8px; background: red; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; }
         .hidden { display: none; }
-        .step { margin: 30px 0; }
     </style>
 </head>
 <body>
-    <h1>📸 SMAM 4 PHOTO BOOTH</h1>
-    <p>Ambil foto, lalu upload</p>
 
-    <!-- STEP 1: AMBIL FOTO -->
-    <div id="stepCamera" class="step">
-        <video id="video" autoplay playsinline></video>
-        <button id="captureBtn">📷 Ambil Foto</button>
-    </div>
+<h1>📸 SMAM 4 PHOTO BOOTH</h1>
 
-    <!-- STEP 2: PILIH FOTO -->
-    <div id="stepGallery" class="step hidden">
-        <h3>Foto Tersimpan (<span id="photoCount">0</span>/4)</h3>
-        <div class="photo-list" id="photoList"></div>
-        <button id="uploadBtn">☁️ Upload ke Server</button>
-        <button id="backCameraBtn">🔙 Ambil Lagi</button>
-    </div>
+<!-- HALAMAN KAMERA -->
+<div id="cameraPage">
+    <video id="video" autoplay playsinline></video>
+    <button id="captureBtn">📷 AMBIL FOTO</button>
+    <button id="doneBtn" style="background: #10b981;">✅ SELESAI</button>
+</div>
 
-    <!-- STEP 3: HASIL UPLOAD -->
-    <div id="stepResult" class="step hidden">
-        <div id="resultContent"></div>
-    </div>
+<!-- HALAMAN GALERI (PILIH FOTO) -->
+<div id="galleryPage" class="hidden">
+    <h3>Foto Tersimpan (<span id="photoCount">0</span>/4)</h3>
+    <div id="photoList" class="photo-list"></div>
+    <button id="uploadBtn">☁️ UPLOAD & QR</button>
+    <button id="backBtn">🔙 KEMBALI</button>
+</div>
 
-    <div id="loading" class="hidden" style="margin-top:20px;">⏳ Mengupload...</div>
+<!-- HALAMAN HASIL QR -->
+<div id="resultPage" class="hidden">
+    <div id="qrResult"></div>
+    <button onclick="location.reload()">📸 FOTO LAGI</button>
+</div>
+
+<div id="loading" class="hidden" style="margin-top:20px;">⏳ MENGUPLOAD...</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 <script>
-// ========== KONFIGURASI (JANGAN DIUBAH) ==========
+// KONFIGURASI
 const SUPABASE_URL = "https://fhuulpwvoyubgmnooqrf.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZodXVscHd2b3l1Ymdtbm9vcXJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NDIzMzQsImV4cCI6MjA5NTExODMzNH0.Dm8inSoHfc1ICBcT1TVLSJWiVZ6rqdifZUtWCLAFTNw";
 const WEB_URL = "https://photoboothsmamip.vercel.app";
 const MAX_PHOTOS = 4;
-// ==============================================
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let supabase = null;
 let photos = [];
 let sessionId = Math.random().toString(36).substring(2, 10);
-
 let stream = null;
+
+// DOM
 const video = document.getElementById('video');
 const captureBtn = document.getElementById('captureBtn');
-const stepCamera = document.getElementById('stepCamera');
-const stepGallery = document.getElementById('stepGallery');
-const stepResult = document.getElementById('stepResult');
-const photoList = document.getElementById('photoList');
+const doneBtn = document.getElementById('doneBtn');
+const cameraPage = document.getElementById('cameraPage');
+const galleryPage = document.getElementById('galleryPage');
+const resultPage = document.getElementById('resultPage');
+const photoListDiv = document.getElementById('photoList');
 const photoCountSpan = document.getElementById('photoCount');
 const uploadBtn = document.getElementById('uploadBtn');
-const backCameraBtn = document.getElementById('backCameraBtn');
+const backBtn = document.getElementById('backBtn');
 const loadingDiv = document.getElementById('loading');
+
+// Inisialisasi Supabase
+supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Buka kamera
 async function startCamera() {
     try {
         stream = await navigator.mediaDevices.getUserMedia({ video: true });
         video.srcObject = stream;
-    } catch(e) { alert('Izin kamera diperlukan'); }
+    } catch(e) {
+        alert('Izin kamera diperlukan');
+    }
 }
 
 // Ambil foto
@@ -94,54 +100,54 @@ function capturePhoto() {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     
     photos.push(canvas.toDataURL('image/png'));
-    updateGallery();
+    updateGalleryDisplay();
     
-    // Flash efek
+    // Flash
     const flash = document.createElement('div');
     flash.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:white;z-index:999;opacity:0.8';
     document.body.appendChild(flash);
     setTimeout(() => flash.remove(), 150);
 }
 
-// Update tampilan galeri
-function updateGallery() {
+// Update tampilan galeri (hanya update data, belum pindah halaman)
+function updateGalleryDisplay() {
     photoCountSpan.textContent = photos.length;
-    
     if (photos.length === 0) {
-        photoList.innerHTML = '<div style="color:#aaa;">Belum ada foto</div>';
+        photoListDiv.innerHTML = '<div style="color:#aaa;">Belum ada foto</div>';
     } else {
-        photoList.innerHTML = photos.map((p, idx) => `
+        photoListDiv.innerHTML = photos.map((p, idx) => `
             <div class="photo-item">
                 <img src="${p}">
                 <div class="delete-btn" onclick="deletePhoto(${idx})">✕</div>
             </div>
         `).join('');
     }
-    
-    // Jika sudah mencapai max, langsung ke galeri
-    if (photos.length === MAX_PHOTOS) {
-        stepCamera.classList.add('hidden');
-        stepGallery.classList.remove('hidden');
-    }
 }
 
+// Hapus foto
 window.deletePhoto = (idx) => {
     photos.splice(idx, 1);
-    updateGallery();
+    updateGalleryDisplay();
 };
 
-// Pindah ke galeri (Selesai)
-document.getElementById('selesaiBtn')?.remove();
-const selesaiHandler = () => {
+// Selesai -> pindah ke galeri
+doneBtn.onclick = () => {
     if (photos.length === 0) {
         alert('Ambil minimal 1 foto');
         return;
     }
-    stepCamera.classList.add('hidden');
-    stepGallery.classList.remove('hidden');
+    cameraPage.classList.add('hidden');
+    galleryPage.classList.remove('hidden');
+    updateGalleryDisplay();
 };
 
-// Upload foto (gabung jadi 1 strip VERTIKAL)
+// Kembali ke kamera
+backBtn.onclick = () => {
+    galleryPage.classList.add('hidden');
+    cameraPage.classList.remove('hidden');
+};
+
+// Upload dan buat strip
 uploadBtn.onclick = async () => {
     if (photos.length === 0) {
         alert('Tidak ada foto');
@@ -153,7 +159,7 @@ uploadBtn.onclick = async () => {
     try {
         const timestamp = Date.now();
         
-        // BIKIN 1 GAMBAR STRIP VERTIKAL
+        // BUAT 1 GAMBAR STRIP VERTIKAL
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         const fotoW = 500;
@@ -161,7 +167,7 @@ uploadBtn.onclick = async () => {
         const gap = 10;
         
         canvas.width = fotoW;
-        canvas.height = (fotoH * photos.length) + (gap * (photos.length - 1)) + 50;
+        canvas.height = (fotoH * photos.length) + (gap * (photos.length - 1)) + 60;
         
         ctx.fillStyle = '#FFFFFF';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -173,41 +179,41 @@ uploadBtn.onclick = async () => {
             y += fotoH + gap;
         }
         
-        // Watermark
-        ctx.font = 'bold 20px Inter';
+        ctx.font = 'bold 18px Inter';
         ctx.fillStyle = '#888';
-        ctx.fillText('SMAM 4 Surabaya', canvas.width - 200, canvas.height - 20);
+        ctx.fillText('SMAM 4 Surabaya', canvas.width - 180, canvas.height - 15);
         
-        // Upload ke Supabase
+        // Upload ke Supabase Storage
         const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
         const fileName = `${sessionId}_${timestamp}.png`;
-        await supabase.storage.from('foto').upload(fileName, blob);
+        const { error: uploadError } = await supabase.storage.from('foto').upload(fileName, blob);
+        if (uploadError) throw uploadError;
+        
         const { data: urlData } = supabase.storage.from('foto').getPublicUrl(fileName);
         
         // Simpan ke database
-        await supabase.from('hasil_foto').insert([{
-            nama: "Pelanggan SMAM 4",
+        const { error: dbError } = await supabase.from('hasil_foto').insert([{
+            nama: "Siswa SMAM 4",
             foto_urls: [urlData.publicUrl],
             session_id: sessionId,
             created_at: new Date().toISOString()
         }]);
+        if (dbError) throw dbError;
         
-        // Tampilkan QR Code
         loadingDiv.classList.add('hidden');
-        stepGallery.classList.add('hidden');
-        stepResult.classList.remove('hidden');
+        galleryPage.classList.add('hidden');
+        resultPage.classList.remove('hidden');
         
         const qrUrl = `${WEB_URL}/index.html?session=${sessionId}`;
-        document.getElementById('resultContent').innerHTML = `
+        document.getElementById('qrResult').innerHTML = `
             <div style="background:white; color:#333; border-radius:24px; padding:30px;">
-                <h2>✅ Upload Berhasil!</h2>
+                <h2>✅ BERHASIL!</h2>
                 <p>${photos.length} foto digabung jadi 1 strip</p>
-                <canvas id="qrCanvas" style="margin:20px auto; width:200px; height:200px;"></canvas>
-                <p style="font-size:11px; word-break:break-all;">${qrUrl}</p>
-                <button onclick="location.reload()" style="background:#f5a623;">📸 Ambil Lagi</button>
+                <canvas id="qrCanvas" style="margin:20px auto; width:180px; height:180px;"></canvas>
+                <p style="font-size:10px; word-break:break-all;">${qrUrl}</p>
             </div>
         `;
-        QRCode.toCanvas(document.getElementById('qrCanvas'), qrUrl, { width: 200 });
+        QRCode.toCanvas(document.getElementById('qrCanvas'), qrUrl, { width: 180 });
         
     } catch (err) {
         loadingDiv.classList.add('hidden');
@@ -215,7 +221,6 @@ uploadBtn.onclick = async () => {
     }
 };
 
-// Bantu load gambar
 function loadImage(src) {
     return new Promise((resolve, reject) => {
         const img = new Image();
@@ -225,25 +230,7 @@ function loadImage(src) {
     });
 }
 
-// Kembali ke kamera
-backCameraBtn.onclick = () => {
-    stepGallery.classList.add('hidden');
-    stepCamera.classList.remove('hidden');
-};
-
-// Tombol selesai buatan sendiri (karena tombol selesai belum ada)
-const customSelesai = document.createElement('button');
-customSelesai.textContent = '✅ Selesai & Lanjut';
-customSelesai.onclick = () => {
-    if (photos.length === 0) {
-        alert('Ambil minimal 1 foto dulu');
-        return;
-    }
-    stepCamera.classList.add('hidden');
-    stepGallery.classList.remove('hidden');
-};
-document.querySelector('#stepCamera').appendChild(customSelesai);
-
+// JALANKAN
 startCamera();
 captureBtn.onclick = capturePhoto;
 </script>
