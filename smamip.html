@@ -450,7 +450,8 @@
                     const response = await fetch(photos[i]);
                     const blob = await response.blob();
                     const filename = `${sessionId}_${timestamp}_${i}.png`;
-                    await supabase.storage.from('foto').upload(filename, blob);
+                    const { error } = await supabase.storage.from('foto').upload(filename, blob);
+                    if (error) throw error;
                     const { data } = supabase.storage.from('foto').getPublicUrl(filename);
                     fotoUrls.push(data.publicUrl);
                 }
@@ -464,12 +465,14 @@
                     session_id: sessionId,
                     created_at: new Date().toISOString()
                 };
-                await supabase.from('hasil_foto').insert([data]);
+                const { error } = await supabase.from('hasil_foto').insert([data]);
+                if (error) throw error;
                 if (loadingDiv) loadingDiv.style.display = 'none';
                 showQRResult();
             } catch (err) {
                 if (loadingDiv) loadingDiv.style.display = 'none';
-                alert('Upload gagal: ' + err.message);
+                console.error('Upload error:', err);
+                alert('Upload gagal: ' + (err.message || 'Silakan coba lagi'));
             }
         };
     }
