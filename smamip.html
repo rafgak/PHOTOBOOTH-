@@ -46,11 +46,9 @@
         .delete-btn { position: absolute; top: -8px; right: -8px; background: #ef4444; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; }
         .delete-btn span { font-size: 16px; }
 
-        /* PREVIEW STRIP VERTICAL seperti picapica */
+        /* PREVIEW STRIP */
         .preview-section { background: white; border-radius: 32px; padding: 24px; margin-bottom: 24px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
         .preview-title { font-size: 1.2rem; font-weight: 700; color: #0b3b2f; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; border-left: 4px solid #f5a623; padding-left: 16px; }
-        
-        /* PHOTO STRIP VERTICAL - seperti photobooth sungguhan */
         .photo-strip-vertical {
             background: white;
             border-radius: 24px;
@@ -58,57 +56,44 @@
             text-align: center;
             margin-bottom: 24px;
             transition: all 0.2s;
-            max-width: 300px;
+            max-width: 320px;
             margin-left: auto;
             margin-right: auto;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
-        .strip-photos-vertical {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        .strip-photo {
-            width: 220px;
-            height: 220px;
-            background: #f1f5f9;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
+        .strip-photos-vertical { display: flex; flex-direction: column; gap: 12px; align-items: center; margin-bottom: 16px; }
+        .strip-photo { width: 240px; height: 240px; background: #f1f5f9; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: relative; }
         .strip-photo img { width: 100%; height: 100%; object-fit: cover; }
-        .strip-caption {
-            margin-top: 12px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            color: #0b3b2f;
-            text-align: center;
-        }
+        .strip-sticker-overlay { position: absolute; bottom: 8px; right: 8px; font-size: 32px; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2)); pointer-events: none; }
+        .strip-caption { margin-top: 12px; font-size: 0.75rem; font-weight: 500; color: #0b3b2f; text-align: center; }
         .empty-strip { padding: 20px; text-align: center; color: #94a3b8; }
 
-        /* Customize panel */
-        .customize-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 24px; }
-        .customize-card { background: #f8f9fc; border-radius: 20px; padding: 16px; }
-        .customize-card h4 { font-size: 0.85rem; font-weight: 600; color: #0b3b2f; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
-        .sticker-options, .frame-options-custom { display: flex; gap: 10px; flex-wrap: wrap; }
-        .sticker-btn, .frame-custom-btn {
+        /* Color Options - Grid seperti picapica */
+        .color-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 16px; }
+        .color-circle { width: 48px; height: 48px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; margin: 0 auto; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+        .color-circle.selected { border-color: #0b3b2f; transform: scale(1.1); box-shadow: 0 0 0 2px #f5a623; }
+        .custom-input { margin-top: 12px; }
+        .custom-input input { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 0.8rem; }
+
+        /* Stickers Grid */
+        .sticker-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .sticker-btn {
             background: white;
             border: 1.5px solid #e2e8f0;
             border-radius: 40px;
-            padding: 8px 16px;
+            padding: 8px 12px;
             font-size: 0.75rem;
             cursor: pointer;
             transition: all 0.2s;
-            display: inline-flex;
+            display: flex;
             align-items: center;
+            justify-content: center;
             gap: 6px;
         }
-        .sticker-btn.selected, .frame-custom-btn.selected { background: #0b3b2f; border-color: #0b3b2f; color: white; }
-        .sticker-btn span, .frame-custom-btn span { font-size: 16px; }
+        .sticker-btn.selected { background: #0b3b2f; border-color: #0b3b2f; color: white; }
+        .sticker-btn span { font-size: 18px; }
 
-        .action-buttons { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; justify-content: center; }
+        .action-buttons { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; justify-content: center; }
         .btn-primary { background: #f5a623; color: #0b3b2f; border: none; padding: 12px 28px; border-radius: 40px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
         .btn-outline { background: white; border: 1.5px solid #e2e8f0; padding: 12px 28px; border-radius: 40px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
 
@@ -119,8 +104,9 @@
         @media (max-width: 600px) {
             .container { padding: 12px; }
             .photo-item { width: 65px; height: 65px; }
-            .strip-photo { width: 180px; height: 180px; }
-            .photo-strip-vertical { max-width: 260px; }
+            .strip-photo { width: 200px; height: 200px; }
+            .color-circle { width: 40px; height: 40px; }
+            .sticker-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
@@ -150,11 +136,11 @@
         <h3><span class="material-symbols-outlined">collections</span> Foto tersimpan (<span id="photoCount">0</span>/<span id="maxPhoto">10</span>)</h3>
         <div class="photo-list" id="photoList"></div>
         <div class="action-buttons">
-            <button class="btn-primary" id="selesaiBtn"><span class="material-symbols-outlined">check_circle</span> Selesai & Lanjut ke Customize</button>
+            <button class="btn-primary" id="selesaiBtn"><span class="material-symbols-outlined">check_circle</span> Selesai & Lanjut</button>
         </div>
     </div>
 
-    <!-- PREVIEW STRIP VERTICAL & CUSTOMIZE -->
+    <!-- PREVIEW STRIP & CUSTOMIZE -->
     <div id="customizeSection" style="display: none;">
         <div class="preview-section">
             <div class="preview-title"><span class="material-symbols-outlined">crop_7_5</span> Photo Strip Preview</div>
@@ -164,35 +150,46 @@
             </div>
         </div>
 
-        <div class="customize-grid">
-            <!-- Stickers (tanpa warna frame) -->
-            <div class="customize-card">
-                <h4><span class="material-symbols-outlined">auto_awesome</span> Stickers</h4>
-                <div class="sticker-options" id="stickerOptions">
+        <div class="customize-grid" style="display: flex; flex-direction: column; gap: 24px;">
+            <!-- Frame Colour - seperti picapica -->
+            <div class="customize-card" style="background: #f8f9fc; border-radius: 20px; padding: 20px;">
+                <h4 style="margin-bottom: 16px;"><span class="material-symbols-outlined">palette</span> Frame colour</h4>
+                <div class="color-grid" id="colorOptions">
+                    <div class="color-circle" style="background: #ffffff; border: 1px solid #ddd;" data-color="white"></div>
+                    <div class="color-circle" style="background: #1a1a1a;" data-color="black"></div>
+                    <div class="color-circle" style="background: #f472b6;" data-color="pink"></div>
+                    <div class="color-circle" style="background: #22c55e;" data-color="green"></div>
+                    <div class="color-circle" style="background: #3b82f6;" data-color="blue"></div>
+                    <div class="color-circle" style="background: #eab308;" data-color="yellow"></div>
+                    <div class="color-circle" style="background: #a855f7;" data-color="purple"></div>
+                    <div class="color-circle" style="background: #b91c1c;" data-color="maroon"></div>
+                    <div class="color-circle" style="background: #7f1d1d;" data-color="burgundy"></div>
+                </div>
+                <div class="custom-input">
+                    <input type="text" id="customColorInput" placeholder="Custom: #RRGGBB atau nama warna">
+                </div>
+            </div>
+
+            <!-- Stickers - seperti picapica -->
+            <div class="customize-card" style="background: #f8f9fc; border-radius: 20px; padding: 20px;">
+                <h4 style="margin-bottom: 16px;"><span class="material-symbols-outlined">auto_awesome</span> Stickers</h4>
+                <div class="sticker-grid" id="stickerOptions">
                     <div class="sticker-btn" data-sticker="none"><span class="material-symbols-outlined">close</span> No Stickers</div>
                     <div class="sticker-btn" data-sticker="heart"><span class="material-symbols-outlined">favorite</span> Heart</div>
                     <div class="sticker-btn" data-sticker="star"><span class="material-symbols-outlined">stars</span> Star</div>
                     <div class="sticker-btn" data-sticker="flower"><span class="material-symbols-outlined">local_florist</span> Flower</div>
+                    <div class="sticker-btn" data-sticker="smile"><span class="material-symbols-outlined">sentiment_satisfied</span> Cute</div>
                     <div class="sticker-btn" data-sticker="party"><span class="material-symbols-outlined">celebration</span> Party</div>
                     <div class="sticker-btn" data-sticker="crown"><span class="material-symbols-outlined">crown</span> Crown</div>
-                </div>
-            </div>
-
-            <!-- Frame Style -->
-            <div class="customize-card">
-                <h4><span class="material-symbols-outlined">style</span> Frame Style</h4>
-                <div class="frame-options-custom" id="frameStyleOptions">
-                    <div class="frame-custom-btn" data-framestyle="modern"><span class="material-symbols-outlined">style</span> Modern</div>
-                    <div class="frame-custom-btn" data-framestyle="polaroid"><span class="material-symbols-outlined">crop_7_5</span> Polaroid</div>
-                    <div class="frame-custom-btn" data-framestyle="classic"><span class="material-symbols-outlined">crown</span> Classic</div>
-                    <div class="frame-custom-btn" data-framestyle="minimal"><span class="material-symbols-outlined">crop_original</span> Minimal</div>
+                    <div class="sticker-btn" data-sticker="rainbow"><span class="material-symbols-outlined">rainbow</span> Rainbow</div>
+                    <div class="sticker-btn" data-sticker="sparkle"><span class="material-symbols-outlined">sparkle</span> Sparkle</div>
                 </div>
             </div>
         </div>
 
         <div class="action-buttons">
-            <button class="btn-primary" id="uploadStripBtn"><span class="material-symbols-outlined">cloud_upload</span> Upload & Dapatkan QR</button>
-            <button class="btn-outline" id="backToCameraBtn"><span class="material-symbols-outlined">arrow_back</span> Ambil Foto Lagi</button>
+            <button class="btn-primary" id="uploadStripBtn"><span class="material-symbols-outlined">cloud_upload</span> Download via QR Code</button>
+            <button class="btn-outline" id="backToCameraBtn"><span class="material-symbols-outlined">arrow_back</span> Take New Photos</button>
         </div>
     </div>
 </div>
@@ -214,8 +211,9 @@
     let photos = [];
     let sessionId = Math.random().toString(36).substring(2, 10);
     
+    let selectedColor = "white";
     let selectedSticker = "none";
-    let selectedFrameStyle = "modern";
+    let customColor = "";
     
     const video = document.getElementById('video');
     const captureBtn = document.getElementById('captureBtn');
@@ -229,8 +227,30 @@
     const loadingDiv = document.getElementById('loading');
     const uploadStripBtn = document.getElementById('uploadStripBtn');
     const backToCameraBtn = document.getElementById('backToCameraBtn');
+    const customColorInput = document.getElementById('customColorInput');
     
     maxPhotoSpan.textContent = MAX_PHOTOS;
+    
+    // Color selection
+    document.querySelectorAll('.color-circle').forEach(el => {
+        el.onclick = () => {
+            document.querySelectorAll('.color-circle').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedColor = el.dataset.color;
+            updateStripPreview();
+        };
+    });
+    document.querySelector('.color-circle').classList.add('selected');
+    
+    // Custom color
+    customColorInput.oninput = (e) => {
+        customColor = e.target.value;
+        if (customColor) {
+            document.querySelectorAll('.color-circle').forEach(c => c.classList.remove('selected'));
+            selectedColor = customColor;
+            updateStripPreview();
+        }
+    };
     
     // Stickers
     document.querySelectorAll('.sticker-btn').forEach(el => {
@@ -243,17 +263,6 @@
     });
     document.querySelector('.sticker-btn').classList.add('selected');
     
-    // Frame style
-    document.querySelectorAll('.frame-custom-btn').forEach(el => {
-        el.onclick = () => {
-            document.querySelectorAll('.frame-custom-btn').forEach(f => f.classList.remove('selected'));
-            el.classList.add('selected');
-            selectedFrameStyle = el.dataset.framestyle;
-            updateStripPreview();
-        };
-    });
-    document.querySelector('.frame-custom-btn').classList.add('selected');
-    
     function updateStripPreview() {
         const stripCaption = document.getElementById('stripCaption');
         let captionText = "✨ SMAM 4 Surabaya ✨";
@@ -262,15 +271,38 @@
         else if (selectedSticker === "flower") captionText = "🌸 SMAM 4 Surabaya 🌸";
         else if (selectedSticker === "party") captionText = "🎉 SMAM 4 Surabaya 🎉";
         else if (selectedSticker === "crown") captionText = "👑 SMAM 4 Surabaya 👑";
+        else if (selectedSticker === "smile") captionText = "😊 SMAM 4 Surabaya 😊";
+        else if (selectedSticker === "rainbow") captionText = "🌈 SMAM 4 Surabaya 🌈";
+        else if (selectedSticker === "sparkle") captionText = "✨ SMAM 4 Surabaya ✨";
         stripCaption.textContent = captionText;
         
+        // Update frame color
         const stripContainer = document.querySelector('.photo-strip-vertical');
-        let borderRadius = "24px";
-        if (selectedFrameStyle === "polaroid") borderRadius = "4px";
-        else if (selectedFrameStyle === "classic") borderRadius = "16px";
-        else if (selectedFrameStyle === "minimal") borderRadius = "8px";
-        stripContainer.style.borderRadius = borderRadius;
-        stripContainer.style.border = selectedFrameStyle === "polaroid" ? "1px solid #e2e8f0" : "none";
+        let bgColor = selectedColor;
+        const colorMap = { white: "#ffffff", black: "#1a1a1a", pink: "#f472b6", green: "#22c55e", blue: "#3b82f6", yellow: "#eab308", purple: "#a855f7", maroon: "#b91c1c", burgundy: "#7f1d1d" };
+        if (colorMap[selectedColor]) bgColor = colorMap[selectedColor];
+        else if (customColor) bgColor = customColor;
+        stripContainer.style.backgroundColor = bgColor;
+        stripContainer.style.border = selectedColor === "white" ? "2px solid #e2e8f0" : "none";
+        
+        // Update sticker overlay on each photo
+        document.querySelectorAll('.strip-photo').forEach(photoDiv => {
+            let existingSticker = photoDiv.querySelector('.strip-sticker-overlay');
+            if (existingSticker) existingSticker.remove();
+            if (selectedSticker !== "none") {
+                const stickerDiv = document.createElement('div');
+                stickerDiv.className = 'strip-sticker-overlay';
+                if (selectedSticker === "heart") stickerDiv.innerHTML = '<span class="material-symbols-outlined">favorite</span>';
+                else if (selectedSticker === "star") stickerDiv.innerHTML = '<span class="material-symbols-outlined">stars</span>';
+                else if (selectedSticker === "flower") stickerDiv.innerHTML = '<span class="material-symbols-outlined">local_florist</span>';
+                else if (selectedSticker === "party") stickerDiv.innerHTML = '<span class="material-symbols-outlined">celebration</span>';
+                else if (selectedSticker === "crown") stickerDiv.innerHTML = '<span class="material-symbols-outlined">crown</span>';
+                else if (selectedSticker === "smile") stickerDiv.innerHTML = '<span class="material-symbols-outlined">sentiment_satisfied</span>';
+                else if (selectedSticker === "rainbow") stickerDiv.innerHTML = '<span class="material-symbols-outlined">rainbow</span>';
+                else if (selectedSticker === "sparkle") stickerDiv.innerHTML = '<span class="material-symbols-outlined">sparkle</span>';
+                photoDiv.appendChild(stickerDiv);
+            }
+        });
     }
     
     async function startCamera() {
@@ -321,7 +353,6 @@
         photoCountSpan.textContent = photos.length;
         if (photos.length === 0) { photoList.innerHTML = '<div style="color:#94a3b8; padding:12px;">Belum ada foto</div>'; return; }
         photoList.innerHTML = photos.map((photo, idx) => `<div class="photo-item"><img src="${photo}"><div class="delete-btn" onclick="window.deletePhoto(${idx})"><span class="material-symbols-outlined">close</span></div></div>`).join('');
-        // Update vertical strip preview
         const stripPhotosDiv = document.getElementById('stripPhotos');
         if (photos.length > 0) {
             stripPhotosDiv.innerHTML = photos.map(p => `<div class="strip-photo"><img src="${p}"></div>`).join('');
@@ -363,8 +394,9 @@
                 nama: "Siswa SMAM 4",
                 foto_urls: fotoUrls,
                 layout: "vertical_strip",
-                frame: selectedFrameStyle,
+                frame_color: selectedColor === "white" ? "white" : selectedColor,
                 sticker: selectedSticker,
+                custom_color: customColor || null,
                 session_id: sessionId,
                 created_at: new Date().toISOString()
             };
@@ -379,7 +411,7 @@
     
     function showQRResult() {
         const url = `${WEB_URL}/index.html?session=${sessionId}`;
-        document.body.innerHTML = `<div style="min-height:100vh; background:#f8f9fc; display:flex; align-items:center; justify-content:center; padding:20px;"><div style="max-width:450px; width:100%; background:white; border-radius:32px; padding:32px 20px; text-align:center;"><div style="background:#0b3b2f; width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px;"><span class="material-symbols-outlined" style="font-size:36px; color:#f5a623;">check</span></div><h2 style="color:#0b3b2f;">Upload Berhasil!</h2><p style="color:#64748b; margin-bottom:24px;">${photos.length} foto dengan ${selectedFrameStyle} frame</p><div style="background:#f1f5f9; border-radius:20px; padding:16px; margin-bottom:20px;"><canvas id="qrCanvas" style="width:180px; height:180px; margin:0 auto;"></canvas></div><div style="font-size:0.7rem; word-break:break-all; background:#f1f5f9; padding:10px; border-radius:12px;">${url}</div><div style="margin-top:20px; display:flex; gap:12px; justify-content:center;"><button onclick="location.reload()" style="background:#f5a623; border:none; padding:10px 20px; border-radius:40px; font-weight:600; cursor:pointer;">📸 Ambil Lagi</button><button onclick="window.location.href='admin.html'" style="background:white; border:1px solid #e2e8f0; padding:10px 20px; border-radius:40px; cursor:pointer;">Admin</button></div></div></div>`;
+        document.body.innerHTML = `<div style="min-height:100vh; background:#f8f9fc; display:flex; align-items:center; justify-content:center; padding:20px;"><div style="max-width:450px; width:100%; background:white; border-radius:32px; padding:32px 20px; text-align:center;"><div style="background:#0b3b2f; width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px;"><span class="material-symbols-outlined" style="font-size:36px; color:#f5a623;">check</span></div><h2 style="color:#0b3b2f;">Upload Berhasil!</h2><p style="color:#64748b; margin-bottom:24px;">${photos.length} foto dengan ${selectedSticker !== "none" ? selectedSticker + " sticker" : "tanpa sticker"}</p><div style="background:#f1f5f9; border-radius:20px; padding:16px; margin-bottom:20px;"><canvas id="qrCanvas" style="width:180px; height:180px; margin:0 auto;"></canvas></div><div style="font-size:0.7rem; word-break:break-all; background:#f1f5f9; padding:10px; border-radius:12px;">${url}</div><div style="margin-top:20px; display:flex; gap:12px; justify-content:center;"><button onclick="location.reload()" style="background:#f5a623; border:none; padding:10px 20px; border-radius:40px; font-weight:600; cursor:pointer;">📸 Take New Photos</button><button onclick="window.location.href='admin.html'" style="background:white; border:1px solid #e2e8f0; padding:10px 20px; border-radius:40px; cursor:pointer;">Admin</button></div></div></div>`;
         QRCode.toCanvas(document.getElementById('qrCanvas'), url, { width: 180 }, (err) => { if (err) console.error(err); });
     }
     
