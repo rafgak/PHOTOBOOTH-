@@ -2,36 +2,166 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hasil Foto - SMAM 4</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>SMAM 4 - Photo Booth</title>
     <style>
-        body { font-family: system-ui; background: #f8f9fc; padding: 20px; text-align: center; }
-        img { max-width: 100%; border-radius: 16px; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .error { color: red; margin-top: 40px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui, sans-serif; background: #f0f0f0; padding: 20px; }
+        .container { max-width: 500px; margin: 0 auto; }
+        video { width: 100%; border-radius: 16px; transform: scaleX(-1); background: #000; }
+        button { background: #f5a623; border: none; padding: 12px 24px; border-radius: 40px; font-weight: bold; margin-top: 10px; cursor: pointer; }
+        .photo-list { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+        .photo-item { position: relative; width: 80px; height: 80px; border-radius: 12px; overflow: hidden; border: 2px solid #ddd; }
+        .photo-item img { width: 100%; height: 100%; object-fit: cover; }
+        .delete-btn { position: absolute; top: -8px; right: -8px; background: red; color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; }
+        .hidden { display: none; }
+        .loading { text-align: center; padding: 20px; }
     </style>
 </head>
 <body>
-<h2>📸 Hasil Foto Kamu</h2>
-<div id="content">Loading...</div>
+<div class="container">
+    <h2 style="margin-bottom: 10px;">📸 SMAM 4 Photo Booth</h2>
+    <video id="video" autoplay playsinline></video>
+    <button id="captureBtn">📷 Ambil Foto</button>
+    
+    <div id="gallery" class="hidden">
+        <h3>Foto Tersimpan (<span id="photoCount">0</span>/4)</h3>
+        <div class="photo-list" id="photoList"></div>
+        <button id="uploadBtn">☁️ Upload & Dapatkan QR</button>
+    </div>
+    
+    <div id="loading" class="loading hidden">⏳ Mengupload...</div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 <script>
 const SUPABASE_URL = "https://fhuulpwvoyubgmnooqrf.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZodXVscHd2b3l1Ymdtbm9vcXJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NDIzMzQsImV4cCI6MjA5NTExODMzNH0.Dm8inSoHfc1ICBcT1TVLSJWiVZ6rqdifZUtWCLAFTNw";
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-const sessionId = new URLSearchParams(location.search).get('session');
+const WEB_URL = "https://photoboothsmamip.vercel.app";
+const MAX_PHOTOS = 4;
 
-if (!sessionId) {
-    document.getElementById('content').innerHTML = '<p class="error">Session ID tidak ditemukan</p>';
-} else {
-    supabase.from('hasil_foto').select('*').eq('session_id', sessionId).then(({ data, error }) => {
-        if (error || !data || data.length === 0) {
-            document.getElementById('content').innerHTML = '<p class="error">Hasil foto tidak ditemukan</p>';
-        } else {
-            const foto = data[0];
-            document.getElementById('content').innerHTML = `<img src="${foto.foto_urls[0]}" alt="foto strip"><p><strong>${foto.nama}</strong><br>${new Date(foto.created_at).toLocaleString('id-ID')}</p>`;
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let photos = [];
+let sessionId = Math.random().toString(36).substring(2, 10);
+
+const video = document.getElementById('video');
+const captureBtn = document.getElementById('captureBtn');
+const gallery = document.getElementById('gallery');
+const photoList = document.getElementById('photoList');
+const photoCountSpan = document.getElementById('photoCount');
+const uploadBtn = document.getElementById('uploadBtn');
+const loadingDiv = document.getElementById('loading');
+
+let stream = null;
+
+async function startCamera() {
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+    } catch { alert('Tidak dapat akses kamera'); }
+}
+
+function capturePhoto() {
+    if (photos.length >= MAX_PHOTOS) { alert(`Maksimal ${MAX_PHOTOS} foto!`); return; }
+    
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    
+    photos.push(canvas.toDataURL('image/png'));
+    updateGallery();
+}
+
+function updateGallery() {
+    gallery.classList.remove('hidden');
+    photoCountSpan.textContent = photos.length;
+    
+    if (photos.length === 0) {
+        photoList.innerHTML = '<div style="color:#999;">Belum ada foto</div>';
+        return;
+    }
+    
+    photoList.innerHTML = photos.map((p, idx) => `
+        <div class="photo-item">
+            <img src="${p}">
+            <div class="delete-btn" onclick="deletePhoto(${idx})">✕</div>
+        </div>
+    `).join('');
+}
+
+window.deletePhoto = (idx) => { photos.splice(idx, 1); updateGallery(); };
+
+uploadBtn.onclick = async () => {
+    if (photos.length === 0) { alert('Tidak ada foto!'); return; }
+    loadingDiv.classList.remove('hidden');
+    
+    try {
+        const timestamp = Date.now();
+        
+        // Buat 1 gambar strip vertikal dari semua foto
+        const canvasStrip = document.createElement('canvas');
+        const ctx = canvasStrip.getContext('2d');
+        const imgWidth = 400;
+        const imgHeight = 400;
+        const gap = 10;
+        
+        canvasStrip.width = imgWidth;
+        canvasStrip.height = (imgHeight * photos.length) + (gap * (photos.length - 1)) + 40;
+        
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, canvasStrip.width, canvasStrip.height);
+        
+        let y = 20;
+        for (let i = 0; i < photos.length; i++) {
+            const img = await loadImage(photos[i]);
+            ctx.drawImage(img, 0, y, imgWidth, imgHeight);
+            y += imgHeight + gap;
         }
+        
+        ctx.font = 'bold 18px Inter';
+        ctx.fillStyle = '#888';
+        ctx.fillText('SMAM 4 Surabaya', canvasStrip.width - 180, canvasStrip.height - 15);
+        
+        const stripBlob = await new Promise(r => canvasStrip.toBlob(r, 'image/png'));
+        const stripFile = `${sessionId}_${timestamp}.png`;
+        await supabase.storage.from('foto').upload(stripFile, stripBlob);
+        const { data: urlData } = supabase.storage.from('foto').getPublicUrl(stripFile);
+        
+        await supabase.from('hasil_foto').insert([{
+            nama: "Siswa SMAM 4",
+            foto_urls: [urlData.publicUrl],
+            session_id: sessionId,
+            created_at: new Date().toISOString()
+        }]);
+        
+        loadingDiv.classList.add('hidden');
+        document.body.innerHTML = `<div style="min-height:100vh; display:flex; align-items:center; justify-content:center; background:#f8f9fc; padding:20px;"><div style="max-width:400px; background:white; border-radius:32px; padding:32px; text-align:center;"><div style="background:#0b3b2f; width:64px; height:64px; border-radius:50%; display:flex; margin:0 auto 20px;"><span style="margin:auto; font-size:36px;">✅</span></div><h2>Upload Berhasil!</h2><p>${photos.length} foto digabung jadi 1 strip</p><canvas id="qrCanvas" style="margin:20px auto; width:180px; height:180px;"></canvas><div style="font-size:11px; word-break:break-all;">${WEB_URL}/index.html?session=${sessionId}</div><button onclick="location.reload()" style="margin-top:20px; background:#f5a623; border:none; padding:10px 20px; border-radius:40px;">📸 Ambil Lagi</button></div></div>`;
+        QRCode.toCanvas(document.getElementById('qrCanvas'), `${WEB_URL}/index.html?session=${sessionId}`, { width: 180 });
+        
+    } catch (err) {
+        loadingDiv.classList.add('hidden');
+        alert('Upload gagal: ' + err.message);
+    }
+};
+
+function loadImage(src) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
     });
 }
+
+startCamera();
+captureBtn.onclick = capturePhoto;
 </script>
 </body>
 </html>
