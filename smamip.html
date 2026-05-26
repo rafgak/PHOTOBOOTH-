@@ -102,13 +102,13 @@
         .custom-input { margin-top: 12px; }
         .custom-input input { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 0.8rem; }
 
-        .sticker-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        /* Sticker baru dengan gambar anjing dan lainnya */
+        .sticker-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 8px; }
         .sticker-btn {
             background: white;
             border: 1.5px solid #e2e8f0;
             border-radius: 40px;
-            padding: 8px 12px;
-            font-size: 0.75rem;
+            padding: 10px 12px;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
@@ -117,12 +117,10 @@
             gap: 8px;
         }
         .sticker-btn.selected { background: #0b3b2f; border-color: #0b3b2f; color: white; }
-        .sticker-btn span { font-size: 20px; }
-        .sticker-icon-img {
-            width: 20px;
-            height: 20px;
-            object-fit: contain;
-        }
+        .sticker-btn.selected span { color: white; }
+        .sticker-emoji { font-size: 28px; }
+        .sticker-label { font-size: 0.75rem; font-weight: 500; color: #334155; }
+        .sticker-btn.selected .sticker-label { color: white; }
 
         .action-buttons { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; justify-content: center; }
         .btn-primary { background: #f5a623; color: #0b3b2f; border: none; padding: 12px 28px; border-radius: 40px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
@@ -201,43 +199,55 @@
             </div>
 
             <div class="customize-card" style="background: #f8f9fc; border-radius: 20px; padding: 20px;">
-                <h4 style="margin-bottom: 16px;"><span class="material-symbols-outlined">auto_awesome</span> Stickers</h4>
+                <h4 style="margin-bottom: 16px;"><span class="material-symbols-outlined">auto_awesome</span> Stickers (🐶🐱❤️✨)</h4>
                 <div class="sticker-grid" id="stickerOptions">
                     <div class="sticker-btn" data-sticker="none">
-                        <span class="material-symbols-outlined">close</span>
-                        <span>No Stickers</span>
+                        <span class="sticker-emoji">🚫</span>
+                        <span class="sticker-label">No Stickers</span>
+                    </div>
+                    <div class="sticker-btn" data-sticker="dog">
+                        <span class="sticker-emoji">🐶</span>
+                        <span class="sticker-label">Dog</span>
+                    </div>
+                    <div class="sticker-btn" data-sticker="cat">
+                        <span class="sticker-emoji">🐱</span>
+                        <span class="sticker-label">Cat</span>
                     </div>
                     <div class="sticker-btn" data-sticker="heart">
-                        <span class="material-symbols-outlined">favorite</span>
-                        <span>Heart</span>
+                        <span class="sticker-emoji">❤️</span>
+                        <span class="sticker-label">Heart</span>
                     </div>
                     <div class="sticker-btn" data-sticker="star">
-                        <span class="material-symbols-outlined">stars</span>
-                        <span>Star</span>
+                        <span class="sticker-emoji">⭐</span>
+                        <span class="sticker-label">Star</span>
                     </div>
                     <div class="sticker-btn" data-sticker="flower">
-                        <span class="material-symbols-outlined">local_florist</span>
-                        <span>Flower</span>
+                        <span class="sticker-emoji">🌸</span>
+                        <span class="sticker-label">Flower</span>
                     </div>
-                    <div class="sticker-btn" data-sticker="cute">
-                        <span class="material-symbols-outlined">sentiment_satisfied</span>
-                        <span>Cute</span>
+                    <div class="sticker-btn" data-sticker="panda">
+                        <span class="sticker-emoji">🐼</span>
+                        <span class="sticker-label">Panda</span>
                     </div>
-                    <div class="sticker-btn" data-sticker="party">
-                        <span class="material-symbols-outlined">celebration</span>
-                        <span>Party</span>
-                    </div>
-                    <div class="sticker-btn" data-sticker="crown">
-                        <span class="material-symbols-outlined">crown</span>
-                        <span>Crown</span>
+                    <div class="sticker-btn" data-sticker="unicorn">
+                        <span class="sticker-emoji">🦄</span>
+                        <span class="sticker-label">Unicorn</span>
                     </div>
                     <div class="sticker-btn" data-sticker="rainbow">
-                        <span class="material-symbols-outlined">rainbow</span>
-                        <span>Rainbow</span>
+                        <span class="sticker-emoji">🌈</span>
+                        <span class="sticker-label">Rainbow</span>
                     </div>
                     <div class="sticker-btn" data-sticker="sparkle">
-                        <span class="material-symbols-outlined">sparkle</span>
-                        <span>Sparkle</span>
+                        <span class="sticker-emoji">✨</span>
+                        <span class="sticker-label">Sparkle</span>
+                    </div>
+                    <div class="sticker-btn" data-sticker="crown">
+                        <span class="sticker-emoji">👑</span>
+                        <span class="sticker-label">Crown</span>
+                    </div>
+                    <div class="sticker-btn" data-sticker="butterfly">
+                        <span class="sticker-emoji">🦋</span>
+                        <span class="sticker-label">Butterfly</span>
                     </div>
                 </div>
             </div>
@@ -287,6 +297,21 @@
     
     maxPhotoSpan.textContent = MAX_PHOTOS;
     
+    const stickerEmojiMap = {
+        none: '',
+        dog: '🐶',
+        cat: '🐱',
+        heart: '❤️',
+        star: '⭐',
+        flower: '🌸',
+        panda: '🐼',
+        unicorn: '🦄',
+        rainbow: '🌈',
+        sparkle: '✨',
+        crown: '👑',
+        butterfly: '🦋'
+    };
+    
     const today = new Date();
     const formattedDate = `${today.getDate().toString().padStart(2,'0')}/${(today.getMonth()+1).toString().padStart(2,'0')}/${today.getFullYear()} ${today.getHours().toString().padStart(2,'0')}:${today.getMinutes().toString().padStart(2,'0')}`;
     document.getElementById('watermarkDate').textContent = formattedDate;
@@ -332,17 +357,10 @@
         document.querySelectorAll('.strip-photo').forEach(photoDiv => {
             let existingSticker = photoDiv.querySelector('.strip-sticker-overlay');
             if (existingSticker) existingSticker.remove();
-            if (selectedSticker !== "none") {
+            if (selectedSticker !== "none" && stickerEmojiMap[selectedSticker]) {
                 const stickerDiv = document.createElement('div');
                 stickerDiv.className = 'strip-sticker-overlay';
-                if (selectedSticker === "heart") stickerDiv.innerHTML = '<span class="material-symbols-outlined">favorite</span>';
-                else if (selectedSticker === "star") stickerDiv.innerHTML = '<span class="material-symbols-outlined">stars</span>';
-                else if (selectedSticker === "flower") stickerDiv.innerHTML = '<span class="material-symbols-outlined">local_florist</span>';
-                else if (selectedSticker === "cute") stickerDiv.innerHTML = '<span class="material-symbols-outlined">sentiment_satisfied</span>';
-                else if (selectedSticker === "party") stickerDiv.innerHTML = '<span class="material-symbols-outlined">celebration</span>';
-                else if (selectedSticker === "crown") stickerDiv.innerHTML = '<span class="material-symbols-outlined">crown</span>';
-                else if (selectedSticker === "rainbow") stickerDiv.innerHTML = '<span class="material-symbols-outlined">rainbow</span>';
-                else if (selectedSticker === "sparkle") stickerDiv.innerHTML = '<span class="material-symbols-outlined">sparkle</span>';
+                stickerDiv.textContent = stickerEmojiMap[selectedSticker];
                 photoDiv.appendChild(stickerDiv);
             }
         });
