@@ -227,7 +227,6 @@
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 <script>
 (function() {
-    // 🔥 UPDATE SUPABASE KEY 🔥
     const SUPABASE_URL = "https://fhuulpwvoyubgmnooqrf.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZodXVscHd2b3l1Ymdtbm9vcXJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NDIzMzQsImV4cCI6MjA5NTExODMzNH0.Dm8inSoHfc1ICBcT1TVLSJWiVZ6rqdifZUtWCLAFTNw";
     const WEB_URL = "https://photoboothsmamip.vercel.app";
@@ -312,6 +311,15 @@
         });
     }
     
+    function loadImage(src) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = src;
+        });
+    }
+    
     async function startCamera() {
         try {
             stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -378,30 +386,104 @@
         if (!photos.length) { alert('Tidak ada foto!'); return; }
         loadingDiv.style.display = 'flex';
         try {
-            const fotoUrls = [];
             const timestamp = Date.now();
+            const fotoUrls = [];
+            
+            // 1. UPLOAD FOTO MENTAH
             for (let i = 0; i < photos.length; i++) {
                 const blob = await (await fetch(photos[i])).blob();
-                const filename = `${sessionId}_${timestamp}_${i}.png`;
+                const filename = `${sessionId}_original_${timestamp}_${i}.png`;
                 await supabase.storage.from('foto').upload(filename, blob);
-                fotoUrls.push(supabase.storage.from('foto').getPublicUrl(filename).data.publicUrl);
+                const { data: urlData } = supabase.storage.from('foto').getPublicUrl(filename);
+                fotoUrls.push(urlData.publicUrl);
             }
-            // HAPUS custom_color dari payload!
+            
+            // 2. BUAT & UPLOAD FOTO STRIP HASIL EDITAN
+            const canvasStrip = document.createElement('canvas');
+            const ctxStrip = canvasStrip.getContext('2d');
+            
+            const fotoWidth = 400;
+            const fotoHeight = 400;
+            const padding = 20;
+            const layoutType = selectedLayout;
+            
+            let canvasWidth, canvasHeight;
+            let positions = [];
+            
+            if (layoutType === "1strip") {
+                canvasWidth = (fotoWidth * photos.length) + (padding * (photos.length + 1));
+                canvasHeight = fotoHeight + (padding * 2);
+                for (let i = 0; i < photos.length; i++) {
+                    positions.push({ x: padding + (i * (fotoWidth + padding)), y: padding });
+                }
+            } else {
+                canvasWidth = (fotoWidth * 2) + (padding * 3);
+                canvasHeight = (fotoHeight * 2) + (padding * 3);
+                const pos = [
+                    { x: padding, y: padding },
+                    { x: padding + fotoWidth + padding, y: padding },
+                    { x: padding, y: padding + fotoHeight + padding },
+                    { x: padding + fotoWidth + padding, y: padding + fotoHeight + padding }
+                ];
+                for (let i = 0; i < Math.min(photos.length, 4); i++) {
+                    positions.push(pos[i]);
+                }
+            }
+            
+            canvasStrip.width = canvasWidth;
+            canvasStrip.height = canvasHeight;
+            
+            ctxStrip.fillStyle = '#FFFFFF';
+            ctxStrip.fillRect(0, 0, canvasStrip.width, canvasStrip.height);
+            
+            for (let i = 0; i < positions.length; i++) {
+                const img = await loadImage(photos[i]);
+                ctxStrip.drawImage(img, positions[i].x, positions[i].y, fotoWidth, fotoHeight);
+                ctxStrip.strokeStyle = selectedColor === "white" ? "#000000" : selectedColor;
+                ctxStrip.lineWidth = 8;
+                ctxStrip.strokeRect(positions[i].x, positions[i].y, fotoWidth, fotoHeight);
+            }
+            
+            if (selectedSticker !== "none" && stickerEmojiMap[selectedSticker]) {
+                ctxStrip.font = `50px "Segoe UI Emoji"`;
+                ctxStrip.fillStyle = "#000000";
+                const lastPos = positions[positions.length-1];
+                ctxStrip.fillText(stickerEmojiMap[selectedSticker], lastPos.x + fotoWidth - 70, lastPos.y + fotoHeight - 30);
+            }
+            
+            ctxStrip.font = 'bold 20px Inter';
+            ctxStrip.fillStyle = '#888888';
+            ctxStrip.fillText('SMAM 4 Surabaya', canvasStrip.width - 180, canvasStrip.height - 15);
+            
+            const stripBlob = await new Promise(resolve => canvasStrip.toBlob(resolve, 'image/png'));
+            const stripFilename = `${sessionId}_strip_${timestamp}.png`;
+            await supabase.storage.from('foto').upload(stripFilename, stripBlob);
+            const { data: stripUrlData } = supabase.storage.from('foto').getPublicUrl(stripFilename);
+            
+            // Tambahkan strip ke foto_urls
+            fotoUrls.push(stripUrlData.publicUrl);
+            
+            // 3. SIMPAN KE DATABASE
             const payload = {
                 nama: "Siswa SMAM 4",
                 foto_urls: fotoUrls,
-                layout: "vertical_strip",
+                layout: layoutType,
                 frame_color: selectedColor,
                 sticker: selectedSticker,
                 session_id: sessionId,
                 created_at: new Date().toISOString()
             };
+            
             const { error } = await supabase.from('hasil_foto').insert([payload]);
             if (error) throw error;
+            
             loadingDiv.style.display = 'none';
-            document.body.innerHTML = `<div style="min-height:100vh; background:#f8f9fc; display:flex; align-items:center; justify-content:center; padding:20px;"><div style="max-width:450px; background:white; border-radius:32px; padding:32px 20px; text-align:center;"><div style="background:#0b3b2f; width:64px; height:64px; border-radius:50%; display:flex; margin:0 auto 20px;"><span style="margin:auto; font-size:36px; color:#f5a623;">✅</span></div><h2 style="color:#0b3b2f;">Upload Berhasil!</h2><p style="margin-bottom:20px;">${photos.length} foto disimpan</p><div style="background:#f1f5f9; border-radius:20px; padding:16px; margin-bottom:20px;"><canvas id="qrCanvas" style="width:180px; height:180px; margin:0 auto;"></canvas></div><div style="font-size:12px; word-break:break-all; background:#f1f5f9; padding:10px; border-radius:12px;">${WEB_URL}/index.html?session=${sessionId}</div><div style="margin-top:20px; display:flex; gap:12px; justify-content:center;"><button onclick="location.reload()" style="background:#f5a623; border:none; padding:10px 20px; border-radius:40px;">📸 Ambil Lagi</button><button onclick="window.location.href='admin.html'" style="background:white; border:1px solid #e2e8f0; padding:10px 20px; border-radius:40px;">Admin</button></div></div></div>`;
+            document.body.innerHTML = `<div style="min-height:100vh; background:#f8f9fc; display:flex; align-items:center; justify-content:center; padding:20px;"><div style="max-width:450px; background:white; border-radius:32px; padding:32px 20px; text-align:center;"><div style="background:#0b3b2f; width:64px; height:64px; border-radius:50%; display:flex; margin:0 auto 20px;"><span style="margin:auto; font-size:36px; color:#f5a623;">✅</span></div><h2 style="color:#0b3b2f;">Upload Berhasil!</h2><p style="margin-bottom:20px;">${photos.length} foto + 1 strip berhasil disimpan</p><div style="background:#f1f5f9; border-radius:20px; padding:16px; margin-bottom:20px;"><canvas id="qrCanvas" style="width:180px; height:180px; margin:0 auto;"></canvas></div><div style="font-size:12px; word-break:break-all; background:#f1f5f9; padding:10px; border-radius:12px;">${WEB_URL}/index.html?session=${sessionId}</div><div style="margin-top:20px; display:flex; gap:12px; justify-content:center;"><button onclick="location.reload()" style="background:#f5a623; border:none; padding:10px 20px; border-radius:40px;">📸 Ambil Lagi</button><button onclick="window.location.href='admin.html'" style="background:white; border:1px solid #e2e8f0; padding:10px 20px; border-radius:40px;">Admin</button></div></div></div>`;
             QRCode.toCanvas(document.getElementById('qrCanvas'), `${WEB_URL}/index.html?session=${sessionId}`, { width: 180 });
-        } catch (err) { loadingDiv.style.display = 'none'; alert('Upload gagal: ' + err.message); }
+        } catch (err) {
+            loadingDiv.style.display = 'none';
+            alert('Upload gagal: ' + err.message);
+        }
     };
     
     startCamera();
